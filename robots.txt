@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tir3bz.github.io/vice-city/sitemap.xml

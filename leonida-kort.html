@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leonida Map – GTA 6</title>
+  <meta name="description" content="A map of GTA 6's Leonida with hundreds of named places: activities, landmarks, food, hotels and more.">
+  <meta property="og:title" content="Leonida Map – GTA 6">
+  <meta property="og:description" content="A map of GTA 6's Leonida with hundreds of named places: activities, landmarks, food, hotels and more.">
+  <meta property="og:image" content="https://tir3bz.github.io/vice-city/billeder/vicecity/leonida-kunst.jpg">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="kort-side">
+  <header class="kort-top">
+    <a class="tilbage" href="udforsk.html">&larr; Back</a>
+    <h1>Leonida</h1>
+    <input id="soeg" class="kort-soeg" type="search" placeholder="Find a place...">
+  </header>
+
+  <!-- Kategorierne. Tryk for at vise eller skjule dem på kortet. -->
+  <div id="typer" class="typer kort-typer"></div>
+
+  <!-- Selve kortet. Træk for at flytte, knib eller scroll for at zoome. -->
+  <div id="kortplads" class="kortplads"></div>
+
+  <!-- Boksen nederst, når man trykker på et sted -->
+  <div id="info" class="kort-info" hidden>
+    <button class="info-luk" aria-label="Close">&times;</button>
+    <h2></h2>
+    <p class="info-type"></p>
+    <p class="info-tekst"></p>
+  </div>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="data/butikker.js"></script>
+  <script src="data/landkort.js"></script>
+  <script src="data/steder.js"></script>
+  <script>
+    // Hver kategori: logo, farve, og om den vises fra start.
+    const kategorier = {
+      "Activities":    { logo: "🎳", farve: "#ff3d9a", vis: true },
+      "Landmarks":     { logo: "🗽", farve: "#ffd23f", vis: true },
+      "Food":          { logo: "🍔", farve: "#ff8a3d", vis: true },
+      "Hotels":        { logo: "🏨", farve: "#b98cff", vis: true },
+      "Shops":         { logo: "🛍️", farve: "#3ee8ff", vis: true },
+      "Transport":     { logo: "✈️", farve: "#5aa8ff", vis: true },
+      "Public places": { logo: "🏛️", farve: "#7cff6b", vis: true },
+      "Nature":        { logo: "🌴", farve: "#00d9a3", vis: false },
+      "Industry":      { logo: "🏭", farve: "#9a9a9a", vis: false },
+      "Other":         { logo: "📍", farve: "#f6e9ff", vis: false }
+    };
+
+    const info = document.getElementById("info");
+    const typerPlads = document.getElementById("typer");
+    const soeg = document.getElementById("soeg");
+    const kort = lavLandkort("kortplads");
+    const naale = L.layerGroup().addTo(kort);
+    let valgt = null;
+
+    // ---------- Kategoriknapper med antal ----------
+    for (const [navn, k] of Object.entries(kategorier)) {
+      const antal = leonidaSteder.filter((s) => s.kategori === navn).length;
+      const knap = document.createElement("button");
+      knap.className = "type-knap";
+      knap.textContent = `${k.logo} ${navn} (${antal})`;
+      knap.onclick = () => {
+        k.vis = !k.vis;
+        tegnNaale();
+      };
+      k.knap = knap;
+      typerPlads.appendChild(knap);
+    }
+
+    // ---------- Nålene ----------
+    function tegnNaale() {
+      naale.clearLayers();
+      const ord = soeg.value.trim().toLowerCase();
+      leonidaSteder.forEach((s, i) => {
+        const k = kategorier[s.kategori];
+        // Søger man, vises alle steder, der passer – uanset kategori.
+        const synlig = ord ? s.navn.toLowerCase().includes(ord) : k.vis;
+        if (!synlig && i !== valgt) return;
+        const ikon = L.divIcon({
+          className: "naal-ikon" + (i === valgt ? " valgt" : ""),
+          html: `<span style="--farve:${k.farve}">${k.logo}</span>`,
+          iconSize: [30, 30],
+          iconAnchor: [15, 15]
+        });
+        L.marker(kortPunkt(s.x, s.y), { icon: ikon, title: s.navn, zIndexOffset: i === valgt ? 1000 : 0, keyboard: false })
+          .on("click", () => vaelg(i, false))
+          .addTo(naale);
+      });
+      for (const k of Object.values(kategorier)) k.knap.classList.toggle("valgt", k.vis);
+    }
+
+    // ---------- Vælg et sted ----------
+    function vaelg(i, flyvTil) {
+      valgt = i;
+      const s = leonidaSteder[i];
+      const k = kategorier[s.kategori];
+      info.querySelector("h2").textContent = k.logo + " " + s.navn;
+      info.querySelector(".info-type").textContent = s.kategori + (s.sted ? " · " + s.sted : "");
+      const noter = [];
+      if (s.inde) noter.push("You can go inside.");
+      if (s.usikker) noter.push("Not confirmed yet, so the name or spot may be a little off.");
+      info.querySelector(".info-tekst").textContent = noter.join(" ");
+      info.style.setProperty("--prik", k.farve);
+      info.hidden = false;
+      if (flyvTil) kort.setView(kortPunkt(s.x, s.y), 4);
+      tegnNaale();
+    }
+
+    info.querySelector(".info-luk").onclick = () => {
+      info.hidden = true;
+      valgt = null;
+      tegnNaale();
+    };
+
+    // ---------- Søgning ----------
+    // Skriv for at se stederne. Tryk Enter for at flyve hen til det første.
+    soeg.oninput = tegnNaale;
+    soeg.onkeydown = (e) => {
+      if (e.key !== "Enter") return;
+      const ord = soeg.value.trim().toLowerCase();
+      const i = leonidaSteder.findIndex((s) => s.navn.toLowerCase().includes(ord));
+      if (ord && i >= 0) vaelg(i, true);
+    };
+
+    tegnNaale();
+  </script>
+  <script src="overgang.js"></script>
+</body>
+</html>

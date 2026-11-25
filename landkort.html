@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Map – GTA 6</title>
+  <meta name="description" content="A map of the shops in GTA 6's Leonida.">
+  <meta property="og:title" content="Map – GTA 6">
+  <meta property="og:description" content="A map of the shops in GTA 6's Leonida.">
+  <meta property="og:image" content="https://tir3bz.github.io/vice-city/billeder/vicecity/leonida-kunst.jpg">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="kort-side">
+  <header class="kort-top">
+    <a class="tilbage" href="butikker.html">&larr; Shops</a>
+    <h1>Map</h1>
+    <button id="flyt-knap" class="flyt-knap">✋ Move pins</button>
+  </header>
+  <div id="typer" class="typer kort-typer"></div>
+
+  <!-- Vises når man flytter nåle -->
+  <div id="flyt-bar" class="flyt-bar" hidden>
+    <span>Drag a pin to where the shop really is.</span>
+    <button id="kopier">Copy</button>
+    <button id="nulstil">Reset</button>
+  </div>
+
+  <!-- Selve kortet. Træk for at flytte, knib eller scroll for at zoome. -->
+  <div id="kortplads" class="kortplads"></div>
+
+  <!-- Boksen nederst, når man trykker på en nål -->
+  <div id="info" class="kort-info" hidden>
+    <button class="info-luk" aria-label="Close">&times;</button>
+    <h2></h2>
+    <p class="info-type"></p>
+    <p class="info-tekst"></p>
+  </div>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="data/butikker.js"></script>
+  <script src="data/butik-placeringer.js"></script>
+  <script src="data/landkort.js"></script>
+  <script>
+    const info = document.getElementById("info");
+    const typerPlads = document.getElementById("typer");
+    const flytKnap = document.getElementById("flyt-knap");
+    const flytBar = document.getElementById("flyt-bar");
+    const kort = lavLandkort("kortplads");
+    const naale = L.layerGroup().addTo(kort);
+
+    // Kommer man fra en butik (landkort.html?butik=12), viser vi den.
+    const adresse = new URLSearchParams(location.search);
+    let valgt = adresse.has("butik") ? Number(adresse.get("butik")) : null;
+    let valgtType = "All";
+    let flytter = false;
+
+    // ---------- Typeknapper ----------
+    const alleTyper = ["All"];
+    for (const b of butikker) {
+      if (!alleTyper.includes(b.type)) alleTyper.push(b.type);
+    }
+    for (const type of alleTyper) {
+      const knap = document.createElement("button");
+      knap.className = "type-knap";
+      knap.textContent = (typeLogoer[type] ? typeLogoer[type] + " " : "") + type;
+      knap.dataset.type = type;
+      knap.onclick = () => {
+        valgtType = type;
+        tegnNaale();
+      };
+      typerPlads.appendChild(knap);
+    }
+
+    // ---------- Nålene ----------
+    function tegnNaale() {
+      naale.clearLayers();
+      const vis = butikker
+        .map((b, i) => i)
+        .filter((i) => i !== valgt && (valgtType === "All" || butikker[i].type === valgtType));
+      if (valgt !== null) vis.push(valgt); // den valgte tegnes til sidst, så den ligger øverst
+
+      for (const i of vis) {
+        const naal = lavNaal(naale, i, i === valgt, flytter);
+        naal.on("click", () => vaelg(i, false));
+        naal.on("dragend", () => {
+          const p = fraKortPunkt(naal.getLatLng());
+          gemPlacering(i, p.x, p.y);
+          vaelg(i, false);
+        });
+      }
+
+      for (const knap of typerPlads.children) {
+        knap.classList.toggle("valgt", knap.dataset.type === valgtType);
+      }
+    }
+
+    // ---------- Vælg en butik ----------
+    function vaelg(i, flyvTil) {
+      valgt = i;
+      const b = butikker[i];
+      const omraade = b.fakta.find((f) => f.navn === "Area");
+      info.querySelector("h2").textContent = (typeLogoer[b.type] || "") + " " + b.navn;
+      info.querySelector(".info-type").textContent =
+        b.type + " · " + (omraade ? omraade.vaerdi : b.region);
+      info.querySelector(".info-tekst").textContent = butikPunkter[i].flyttet
+        ? "You moved this pin yourself."
+        : "The pin shows the area. The shop may be a little further away.";
+      info.style.setProperty("--prik", typeFarver[b.type] || "#fff");
+      info.hidden = false;
+
+      if (flyvTil) {
+        const p = butikPunkter[i];
+        kort.setView(kortPunkt(p.x, p.y), 4);
+      }
+      tegnNaale();
+    }
+
+    info.querySelector(".info-luk").onclick = () => {
+      info.hidden = true;
+      valgt = null;
+      tegnNaale();
+    };
+
+    // ---------- Flyt nåle ----------
+    flytKnap.onclick = () => {
+      flytter = !flytter;
+      flytKnap.classList.toggle("til", flytter);
+      flytKnap.textContent = flytter ? "✔ Done" : "✋ Move pins";
+      flytBar.hidden = !flytter;
+      tegnNaale();
+    };
+
+    // Kopierer de flyttede placeringer, så de kan sættes ind i data/butik-placeringer.js.
+    document.getElementById("kopier").onclick = async () => {
+      const flyttede = hentFlyttede();
+      const linjer = Object.entries(flyttede)
+        .map(([noegle, [x, y]]) => `  ${JSON.stringify(noegle)}: [${x}, ${y}],`);
+      if (linjer.length === 0) {
+        alert("You have not moved any pins yet.");
+        return;
+      }
+      const tekst = linjer.join("\n");
+      try {
+        await navigator.clipboard.writeText(tekst);
+        alert("Copied " + linjer.length + " pins. Paste them into data/butik-placeringer.js.");
+      } catch (e) {
+        prompt("Copy this text:", tekst);
+      }
+    };
+
+    document.getElementById("nulstil").onclick = () => {
+      if (!confirm("Put all pins you moved back where they were?")) return;
+      localStorage.removeItem(gemteNoegle);
+      location.reload();
+    };
+
+    tegnNaale();
+    if (valgt !== null && butikker[valgt]) vaelg(valgt, true);
+
+    // Kommer man fra "Only in Leonida" (landkort.html?sted=Vice%20City), flyver vi derhen.
+    const sted = adresse.get("sted");
+    if (sted && steder[sted]) kort.setView(kortPunkt(steder[sted][0], steder[sted][1]), 3);
+  </script>
+  <script src="overgang.js"></script>
+</body>
+</html>

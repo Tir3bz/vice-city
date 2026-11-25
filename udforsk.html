@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Explore Vice City – GTA 6</title>
+  <meta name="description" content="Explore GTA 6's Vice City: animals, cars, characters, shops and a map of Leonida.">
+  <meta property="og:title" content="Explore Vice City – GTA 6">
+  <meta property="og:description" content="Explore GTA 6's Vice City: animals, cars, characters, shops and a map of Leonida.">
+  <meta property="og:image" content="https://tir3bz.github.io/vice-city/billeder/vicecity/leonida-kunst.jpg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="effekter.css">
+</head>
+<body class="udforsk-baggrund">
+  <div class="udforsk-top">
+    <a class="tilbage" href="index.html">&larr; Back</a>
+    <h1>Explore Vice City</h1>
+    <p class="undertitel">Pick what you want to explore.</p>
+  </div>
+
+  <!-- Det store kort øverst: Only in Leonida. Det første man ser og trykker på. -->
+  <a class="leonida-feature" href="leonida.html">
+    <span class="leonida-feature-billede" style="background-image: url('billeder/vicecity/leonida-kunst.jpg')"></span>
+    <span class="leonida-feature-indhold">
+      <span class="leonida-feature-maerke">★ The big tour</span>
+      <span class="leonida-feature-titel">Only in<br>Leonida</span>
+      <span class="leonida-feature-tekst">Scroll through Leonida and meet the people and the places, from Vice City to Mount Kalaga.</span>
+      <span class="leonida-feature-knap">▶ Start the tour</span>
+    </span>
+  </a>
+  <p class="leonida-feature-mere">Or scroll down to explore more ↓</p>
+
+  <main class="forside">
+    <!-- Hver sektion: farven står i style="--farve: ...". Ret billede og tekst, som du vil.
+         Mellem sektionerne ligger små billeder fra Vice City (class="fotos"). -->
+
+    <a class="sektion" href="dyr.html" style="--farve: #ff3d9a">
+      <img class="sektion-billede" src="billeder/dyr/albino-american-alligator.jpg" alt="">
+      <span class="sektion-indhold">
+        <span class="knap-titel">Animals</span>
+        <span class="knap-tekst">Welcome to the wild side of Vice City! Here you can see all the animals, from alligators in the swamps to dolphins off the coast.</span>
+        <span class="sektion-knap">Explore the animals</span>
+      </span>
+    </a>
+
+
+    <div class="fotos">
+      <img src="billeder/vicecity/vice-city-skilt.jpg" alt="">
+      <img src="billeder/vicecity/skyline.jpg" alt="">
+    </div>
+
+    <a class="sektion" href="biler.html" style="--farve: #3ee8ff">
+      <img class="sektion-billede" src="billeder/biler/cheetah-classic.jpg" alt="">
+      <span class="sektion-indhold">
+        <span class="knap-titel">Cars</span>
+        <span class="knap-tekst">Welcome to the streets of Vice City! Here you can find all the cars, from muscle cars and supercars to motorcycles.</span>
+        <span class="sektion-knap">Explore the cars</span>
+      </span>
+    </a>
+
+
+    <div class="fotos">
+      <img src="billeder/vicecity/leonida-keys.jpg" alt="">
+      <img src="billeder/vicecity/havn.jpg" alt="">
+    </div>
+
+    <a class="sektion" href="karakterer.html" style="--farve: #ff8a3d">
+      <img class="sektion-billede" src="billeder/karakterer/lucia-caminos.jpg" alt="">
+      <span class="sektion-indhold">
+        <span class="knap-titel">Characters</span>
+        <span class="knap-tekst">Welcome to Vice City! Here you can meet Jason, Lucia and all the people they run into in Leonida.</span>
+        <span class="sektion-knap">Meet the characters</span>
+      </span>
+    </a>
+
+
+    <div class="fotos">
+      <img src="billeder/vicecity/gadekunst.jpg" alt="">
+      <img src="billeder/vicecity/byen-om-natten.jpg" alt="">
+    </div>
+
+    <a class="sektion" href="butikker.html" style="--farve: #ffd23f">
+      <img class="sektion-billede" src="billeder/karakterer/phil.jpg" alt="">
+      <span class="sektion-indhold">
+        <span class="knap-titel">Shops</span>
+        <span class="knap-tekst">Need a new look in Vice City? Here you can find all the barbers, clothing stores, gun stores and more.</span>
+        <span class="sektion-knap">Find the shops</span>
+      </span>
+    </a>
+
+    <div class="fotos">
+      <img src="billeder/vicecity/leonida-keys.jpg" alt="">
+      <img src="billeder/vicecity/skyline.jpg" alt="">
+    </div>
+
+    <a class="sektion" href="leonida-kort.html" style="--farve: #7cff6b">
+      <img class="sektion-billede" src="billeder/vicecity/kort.jpg" alt="">
+      <span class="sektion-indhold">
+        <span class="knap-titel">Map</span>
+        <span class="knap-tekst">The whole state of Leonida on one map. Find activities, landmarks, food, hotels, airports and hundreds of other places.</span>
+        <span class="sektion-knap">Open the map</span>
+      </span>
+    </a>
+  </main>
+
+  <script>
+    // Hver sektion fader blødt frem, når man scroller ned til den.
+    const sektioner = document.querySelectorAll(".sektion, .fotos");
+    const iagttager = new IntersectionObserver((ting) => {
+      for (const t of ting) {
+        if (t.isIntersecting) {
+          t.target.classList.add("synlig");
+          iagttager.unobserve(t.target);
+        }
+      }
+    }, { threshold: 0.2 });
+    sektioner.forEach((s) => iagttager.observe(s));
+  </script>
+  <script src="effekter.js"></script>
+  <script src="overgang.js"></script>
+</body>
+</html>

@@ -1,0 +1,1571 @@
+/* Design: Vice City Nights.
+   Farverne står her øverst. Ret en farve her, så skifter den på hele siden. */
+:root {
+  --nat: #1b0b33;        /* baggrund */
+  --kort: #2a1550;       /* kortenes baggrund */
+  --pink: #ff3d9a;       /* overskrifter og neon */
+  --turkis: #3ee8ff;     /* knapper og kanter */
+  --orange: #ff8a3d;     /* navne på kort */
+  --gul: #ffd23f;        /* toppen af solen */
+  --tekst: #f6e9ff;      /* almindelig tekst */
+  --svag: #b9a6d6;       /* mindre vigtig tekst */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Samme mørke farve bag siden, så der ikke blinker hvidt mellem siderne. */
+html {
+  background: var(--nat);
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: var(--nat);
+  color: var(--tekst);
+}
+
+main {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+/* ---------- Overskrifter ---------- */
+
+h1 {
+  font-family: "Arial Black", Impact, sans-serif;
+  font-style: italic;
+  font-size: 2.6rem;
+  line-height: 0.95;
+  margin: 0 0 6px;
+  color: var(--pink);
+  text-shadow: 0 0 12px var(--pink), 0 0 2px #fff;
+}
+
+.undertitel {
+  color: var(--turkis);
+  margin: 0 0 24px;
+}
+
+/* ---------- Forsiden ---------- */
+
+/* Velkomsten fylder hele skærmen, så man skal scrolle for at se mere. */
+.velkomst {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px 24px;
+  text-align: center;
+  /* Leonida-kunstværket fylder hele skærmen. Toppen er mørk, så velkomsten kan læses. */
+  justify-content: flex-start;
+  background:
+    linear-gradient(to bottom, var(--nat) 0%, rgba(27, 11, 51, 0.75) 22%, rgba(27, 11, 51, 0) 45%, rgba(27, 11, 51, 0) 85%, var(--nat) 100%),
+    url("billeder/vicecity/leonida-kunst.jpg") center 75% / cover no-repeat;
+}
+
+.sol {
+  display: block;
+  width: 220px;
+  margin: auto auto 4px;
+}
+
+.velkomst-lille {
+  margin: 0;
+  font-family: "Arial Black", Impact, sans-serif;
+  font-style: italic;
+  font-size: 1.3rem;
+  color: var(--turkis);
+  text-shadow: 0 0 10px rgba(62, 232, 255, 0.7);
+}
+
+.velkomst h1 {
+  font-size: 4.2rem;
+  line-height: 0.95;
+  margin: 0 0 18px;
+}
+
+.velkomst-tekst {
+  max-width: 22em;
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+  line-height: 1.45;
+}
+
+.velkomst-af {
+  margin: 0;
+  color: var(--svag);
+}
+
+/* "Scroll down"-pilen nederst på velkomsten. */
+.scroll-pil {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-top: auto;
+  padding-top: 36px;
+  color: var(--turkis);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.scroll-pil svg {
+  width: 30px;
+  height: 30px;
+  animation: hop 1.6s ease-in-out infinite;
+}
+
+@keyframes hop {
+  50% { transform: translateY(6px); }
+}
+
+/* De fire sektioner under velkomsten, med god luft imellem. */
+.forside {
+  display: grid;
+  gap: 56px;
+  padding-top: 24px;
+  padding-bottom: 80px;
+  overflow-x: hidden;
+}
+
+/* Ingen boks: billedet og teksten står frit på siden. */
+.sektion {
+  --farve: var(--turkis);
+  display: block;
+  text-decoration: none;
+  color: var(--tekst);
+}
+
+/* Billedet fader ud i bunden, så det glider sammen med teksten. */
+.sektion-billede {
+  display: block;
+  width: 88%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 28px 28px 0 0;
+  -webkit-mask-image: linear-gradient(to bottom, #000 50%, transparent);
+  mask-image: linear-gradient(to bottom, #000 50%, transparent);
+}
+
+.sektion-indhold {
+  display: block;
+  width: 88%;
+  margin-top: -64px;
+  position: relative;
+  border-left: 3px solid var(--farve);
+  padding: 0 0 4px 16px;
+}
+
+/* Hver anden sektion står til højre, så det ikke bare er en lige stak. */
+.sektion:nth-of-type(even) .sektion-billede,
+.sektion:nth-of-type(even) .sektion-indhold {
+  margin-left: auto;
+}
+
+/* Små billeder fra Vice City mellem sektionerne, lidt skæve som polaroids. */
+.fotos {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  padding: 6px 0;
+}
+
+.fotos img {
+  width: 46%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 5px solid #fff;
+  border-bottom-width: 16px;
+  border-radius: 4px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  transform: rotate(-5deg);
+}
+
+.fotos img:nth-child(2) {
+  margin-left: -6%;
+  margin-top: 26px;
+  transform: rotate(4deg);
+}
+
+.fotos {
+  opacity: 0;
+  transition: opacity 900ms ease-out;
+}
+
+.fotos.synlig {
+  opacity: 1;
+}
+
+.sektion .knap-titel {
+  font-size: 2.3rem;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--farve) 70%, transparent);
+}
+
+.sektion-knap {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 11px 18px;
+  font-weight: bold;
+  color: var(--nat);
+  background: var(--farve);
+  border-radius: 999px;
+}
+
+/* Sektionerne fader blødt frem, når man scroller ned til dem (se index.html). */
+.sektion {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 700ms ease-out, transform 700ms ease-out;
+}
+
+.sektion.synlig {
+  opacity: 1;
+  transform: none;
+}
+
+/* "Reducer bevægelse": sektionerne fader stadig, men glider ikke, og pilen hopper ikke. */
+@media (prefers-reduced-motion: reduce) {
+  .sektion { transform: none; }
+  .scroll-pil svg { animation: none; }
+}
+
+/* Gammel stil til knapper (bruges ikke længere på forsiden). */
+.knapper {
+  display: grid;
+  gap: 16px;
+}
+
+/* Hver sektion har sin egen neonfarve (--farve), som sættes i index.html. */
+.knap {
+  --farve: var(--turkis);
+  display: block;
+  padding: 22px 22px 24px;
+  text-align: left;
+  text-decoration: none;
+  color: var(--tekst);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--farve) 14%, var(--kort)), var(--kort) 70%);
+  border: 2px solid var(--farve);
+  border-radius: 24px;
+  box-shadow: 0 0 16px color-mix(in srgb, var(--farve) 40%, transparent);
+}
+
+.knap-titel {
+  display: block;
+  margin-bottom: 6px;
+  font-family: "Arial Black", Impact, sans-serif;
+  font-style: italic;
+  font-size: 1.9rem;
+  color: var(--farve);
+}
+
+.knap-tekst {
+  display: block;
+  line-height: 1.45;
+}
+
+.knap:active {
+  background: color-mix(in srgb, var(--farve) 20%, var(--kort));
+}
+
+/* ---------- Tilbage-knap ---------- */
+
+.tilbage {
+  display: inline-block;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  color: var(--turkis);
+  border: 2px solid var(--turkis);
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* ---------- Søgefelt og typeknapper ---------- */
+
+.soegefelt {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 1.1rem;
+  color: var(--tekst);
+  background: var(--kort);
+  border: 2px solid #4a2d7a;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.soegefelt::placeholder {
+  color: var(--svag);
+}
+
+.soegefelt:focus {
+  outline: none;
+  border-color: var(--turkis);
+}
+
+.typer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.type-knap {
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: var(--turkis);
+  background: none;
+  border: 2px solid var(--turkis);
+  border-radius: 999px;
+}
+
+.type-knap.valgt {
+  color: #fff;
+  background: var(--pink);
+  border-color: var(--pink);
+  box-shadow: 0 0 10px var(--pink);
+}
+
+.antal {
+  color: var(--svag);
+  margin: 0 0 12px;
+}
+
+/* ---------- Kort ---------- */
+
+.kort {
+  background: linear-gradient(160deg, #33195f, var(--kort) 60%);
+  border: 1px solid rgba(255, 61, 154, 0.3);
+  border-radius: 22px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.kort h2 {
+  margin: 0 0 8px;
+  font-size: 1.4rem;
+  color: var(--orange);
+}
+
+.kort p {
+  margin: 0 0 14px;
+  line-height: 1.45;
+}
+
+/* Fakta ligger i en lille mørk boks i bunden af kortet. */
+.kort ul {
+  list-style: none;
+  margin: 0;
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.kort li {
+  line-height: 1.35;
+}
+
+.kort li strong {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--turkis);
+}
+
+/* ---------- Galleri med billeder (dyr) ---------- */
+
+.galleri {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.flise {
+  display: block;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  color: var(--tekst);
+  background: var(--kort);
+  border: 1px solid rgba(255, 61, 154, 0.3);
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  transition: transform 100ms, border-color 200ms;
+}
+
+.flise:active {
+  transform: scale(0.97);
+}
+
+.flise-billede svg,
+.flise-billede img,
+.detaljer-billede > svg,
+.detaljer-billede > img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.flise-navn {
+  display: block;
+  padding: 10px 12px 12px;
+  font-weight: bold;
+  line-height: 1.25;
+}
+
+/* Vinduet med detaljer */
+#detaljer {
+  width: min(92vw, 440px);
+  max-height: 90vh;
+  padding: 0;
+  color: var(--tekst);
+  background: var(--kort);
+  border: 2px solid var(--pink);
+  border-radius: 26px;
+  box-shadow: 0 0 30px rgba(255, 61, 154, 0.45);
+  overflow: auto;
+}
+
+#detaljer::backdrop {
+  background: rgba(27, 11, 51, 0.8);
+}
+
+#detaljer[open] {
+  animation: 250ms ease-out vindue-ind;
+}
+
+@keyframes vindue-ind {
+  from { opacity: 0; }
+}
+
+.detaljer-tekst {
+  padding: 18px 20px 4px;
+}
+
+.detaljer-tekst h2 {
+  margin: 0 0 8px;
+  font-family: "Arial Black", Impact, sans-serif;
+  font-style: italic;
+  font-size: 1.7rem;
+  color: var(--orange);
+}
+
+.detaljer-tekst p {
+  margin: 0 0 14px;
+  line-height: 1.45;
+}
+
+.detaljer-tekst ul {
+  list-style: none;
+  margin: 0;
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.detaljer-tekst li strong {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--turkis);
+}
+
+.luk {
+  display: block;
+  width: calc(100% - 40px);
+  margin: 16px 20px 20px;
+  padding: 14px;
+  font: inherit;
+  font-weight: bold;
+  color: #fff;
+  background: var(--pink);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+/* ---------- Bløde overgange ---------- */
+
+/* Skiftet mellem sider ("Opløs") laves i overgang.js. */
+
+/* Kortene toner frem, når man vælger en type eller søger. */
+#kort.vis {
+  animation: 250ms ease-out both kort-ind;
+}
+
+.galleri.vis {
+  animation: 250ms ease-out both kort-ind;
+}
+
+@keyframes kort-ind {
+  from { opacity: 0; transform: translateY(8px); }
+}
+
+/* Knapper reagerer blødt, når man trykker på dem. */
+.knap,
+.tilbage,
+.type-knap {
+  transition: background-color 200ms, color 200ms, border-color 200ms, box-shadow 200ms, transform 100ms;
+}
+
+.knap:active,
+.tilbage:active,
+.type-knap:active {
+  transform: scale(0.97);
+}
+
+/* Hvis telefonen er sat til "reducer bevægelse", slår vi animationerne fra. */
+@media (prefers-reduced-motion: reduce) {
+  #kort.vis {
+    animation: none;
+  }
+  .knap,
+  .tilbage,
+  .type-knap {
+    transition: none;
+  }
+}
+
+/* Tydelig markering, når man bruger tastaturet */
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--gul);
+  outline-offset: 3px;
+}
+
+/* ---------- Karakterer ---------- */
+
+/* Jason og Lucia: store plakater i fuld bredde. */
+.hovedpersoner {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.plakat,
+.portraet {
+  position: relative;
+  display: block;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  color: #fff;
+  background: var(--kort);
+  border-radius: 22px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 100ms;
+}
+
+.plakat {
+  border: 2px solid var(--pink);
+  box-shadow: 0 0 22px rgba(255, 61, 154, 0.45);
+}
+
+.plakat:nth-child(2) {
+  border-color: var(--turkis);
+  box-shadow: 0 0 22px rgba(62, 232, 255, 0.45);
+}
+
+.portraet {
+  border: 1px solid rgba(255, 61, 154, 0.3);
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.plakat:active,
+.portraet:active {
+  transform: scale(0.97);
+}
+
+.plakat img,
+.portraet img {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+}
+
+.plakat img {
+  aspect-ratio: 16 / 10;
+}
+
+.portraet img {
+  aspect-ratio: 4 / 3;
+}
+
+/* Navnet står oven på billedet med en mørk skygge bag. */
+.karakter-navn {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 28px 12px 10px;
+  font-weight: bold;
+  line-height: 1.2;
+  background: linear-gradient(transparent, rgba(27, 11, 51, 0.92));
+}
+
+.plakat .karakter-navn {
+  padding: 40px 18px 14px;
+  font-family: "Arial Black", Impact, sans-serif;
+  font-style: italic;
+  font-size: 1.9rem;
+  text-shadow: 0 0 12px var(--pink);
+}
+
+.plakat:nth-child(2) .karakter-navn {
+  text-shadow: 0 0 12px var(--turkis);
+}
+
+.portraetter {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.afsnit {
+  margin: 32px 0 14px;
+  font-family: "Arial Black", Impact, sans-serif;
+  font-style: italic;
+  font-size: 1.6rem;
+  color: var(--turkis);
+  text-shadow: 0 0 10px rgba(62, 232, 255, 0.6);
+}
+
+.afsnit span {
+  font-family: system-ui, sans-serif;
+  font-style: normal;
+  font-size: 1rem;
+  color: var(--svag);
+  text-shadow: none;
+}
+
+/* Neon-kort med forbogstaver til karakterer uden billede. */
+.initialer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  font-family: "Arial Black", Impact, sans-serif;
+  font-style: italic;
+  font-size: 2.6rem;
+  color: #fff;
+  text-shadow: 0 0 14px var(--pink);
+  background: linear-gradient(160deg, #ff3d9a 0%, #6a2c91 55%, var(--nat) 100%);
+}
+
+/* I vinduet vises hele det brede billede. */
+#detaljer.bred .detaljer-billede img,
+#detaljer.bred .detaljer-billede .initialer {
+  aspect-ratio: 16 / 9;
+}
+
+/* Billeder af biler er brede (16:9), så de ikke bliver skåret til. */
+.biler .flise-billede svg,
+.biler .flise-billede img,
+.biler .detaljer-billede > svg,
+.biler .detaljer-billede > img {
+  aspect-ratio: 16 / 9;
+}
+
+/* ---------- Butikker: den store runde MAP-knap ---------- */
+
+.butik-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.map-knap {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  font-family: "Arial Black", Impact, sans-serif;
+  font-style: italic;
+  font-size: 1.7rem;
+  color: #fff;
+  text-decoration: none;
+  background: radial-gradient(circle at 35% 30%, var(--pink), #a01a68 75%);
+  border: 3px solid var(--gul);
+  box-shadow: 0 0 22px var(--pink), inset 0 0 12px rgba(255, 255, 255, 0.25);
+  transition: transform 100ms;
+}
+
+.map-knap:active {
+  transform: scale(0.94);
+}
+
+.kort.kan-trykkes {
+  cursor: pointer;
+}
+
+.kort.kan-trykkes:active {
+  transform: scale(0.98);
+}
+
+.stort-kort-link {
+  display: block;
+  margin: 16px 20px 0;
+  padding: 14px;
+  text-align: center;
+  font-weight: bold;
+  color: var(--turkis);
+  border: 2px solid var(--turkis);
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.stort-kort-link + .luk {
+  margin-top: 10px;
+}
+
+/* ---------- Landkortet (Leaflet) ---------- */
+
+/* Det lille kort i butiksvinduet */
+.minikort {
+  width: 100%;
+  aspect-ratio: 1;
+  background: #2b62a6;
+}
+
+/* Zoom-knapper og kreditering i appens stil */
+.leaflet-bar a,
+.leaflet-bar a:hover {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  font-size: 1.5rem;
+  color: var(--turkis);
+  background: var(--kort);
+  border-color: #4a2d7a;
+}
+
+.leaflet-bar {
+  border: 2px solid var(--turkis) !important;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.leaflet-control-attribution {
+  font-size: 0.65rem;
+}
+
+/* Siden med det store kort fylder hele skærmen. */
+.kort-side {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.kort-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 16px 0;
+}
+
+.kort-top .tilbage {
+  margin-bottom: 0;
+}
+
+.kort-top h1 {
+  margin: 0;
+}
+
+.kort-typer {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 12px 16px;
+  margin-bottom: 0;
+  scrollbar-width: none;
+}
+
+.kort-typer .type-knap {
+  flex: none;
+}
+
+.kortplads {
+  flex: 1;
+  min-height: 0;
+  background: #2b62a6;
+}
+
+.kort-info {
+  position: fixed;
+  z-index: 1000;
+  left: 12px;
+  right: 12px;
+  bottom: 28px;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px 48px 16px 18px;
+  color: var(--tekst);
+  background: var(--kort);
+  border: 2px solid var(--prik, var(--pink));
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+  animation: 200ms ease-out vindue-ind;
+}
+
+.kort-info[hidden] {
+  display: none;
+}
+
+.kort-info h2 {
+  margin: 0 0 4px;
+  font-family: "Arial Black", Impact, sans-serif;
+  font-style: italic;
+  color: var(--orange);
+}
+
+.kort-info p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.kort-info .info-type {
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: var(--turkis);
+}
+
+.info-luk {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  font-size: 1.5rem;
+  color: var(--tekst);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ---------- Nåle med logo ---------- */
+
+.naal-ikon span {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  font-size: 16px;
+  line-height: 1;
+  background: #1b0b33;
+  border: 3px solid var(--farve);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  transition: transform 150ms;
+}
+
+/* Den valgte nål er større og blinker. */
+.naal-ikon.valgt span {
+  transform: scale(1.35);
+  border-color: #fff;
+  box-shadow: 0 0 0 4px var(--farve), 0 0 16px var(--farve);
+  animation: 1.2s ease-in-out infinite naal-blink;
+}
+
+@keyframes naal-blink {
+  50% { box-shadow: 0 0 0 8px transparent, 0 0 4px var(--farve); }
+}
+
+/* Nåle der kan flyttes, vipper lidt. */
+.naal-ikon.flytbar span {
+  cursor: grab;
+  border-style: dashed;
+}
+
+/* Langt ude: små prikker uden logo, så kortet ikke drukner. */
+.langt-ude .naal-ikon span {
+  transform: scale(0.4);
+  font-size: 0;
+  background: var(--farve);
+  border-color: #1b0b33;
+}
+
+.langt-ude .naal-ikon.valgt span {
+  transform: scale(0.8);
+}
+
+/* ---------- Flyt nåle ---------- */
+
+.flyt-knap {
+  margin-left: auto;
+  padding: 10px 14px;
+  font: inherit;
+  font-weight: bold;
+  color: var(--gul);
+  background: none;
+  border: 2px solid var(--gul);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.flyt-knap.til {
+  color: #1b0b33;
+  background: var(--gul);
+}
+
+.flyt-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 12px;
+  color: var(--gul);
+  font-weight: bold;
+}
+
+.flyt-bar[hidden] {
+  display: none;
+}
+
+.flyt-bar span {
+  flex: 1;
+}
+
+.flyt-bar button {
+  padding: 8px 12px;
+  font: inherit;
+  font-weight: bold;
+  color: var(--tekst);
+  background: var(--kort);
+  border: 2px solid var(--turkis);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+/* ---------- Forsiden: knappen under velkomsten ---------- */
+/* Hele sektionen er en neon-nattescene (tegnet i index.html), med knappen øverst på himlen. */
+.start {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14vh 20px 40px;
+  text-align: center;
+}
+
+.start-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Teksten og knappen ligger foran scenen. */
+.start-indhold {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+
+/* Stjernerne blinker, og solen gløder lidt op og ned. */
+.stjerner circle {
+  animation: blink 3s ease-in-out infinite;
+}
+.stjerner circle:nth-child(3n) { animation-delay: 1s; }
+.stjerner circle:nth-child(3n + 1) { animation-delay: 2s; }
+
+@keyframes blink {
+  50% { opacity: 0.2; }
+}
+
+.sol-cirkel {
+  animation: sol-gloed 5s ease-in-out infinite;
+}
+
+@keyframes sol-gloed {
+  50% { opacity: 0.8; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stjerner circle,
+  .sol-cirkel {
+    animation: none;
+  }
+}
+
+.start-tekst {
+  margin: 0;
+  font-family: "Arial Black", Impact, sans-serif;
+  font-style: italic;
+  font-size: 1.6rem;
+  color: var(--turkis);
+  text-shadow: 0 0 10px rgba(62, 232, 255, 0.6);
+}
+
+/* Den store knap nederst på forsiden. */
+.udforsk-knap {
+  padding: 18px 34px;
+  font-family: "Arial Black", Impact, sans-serif;
+  font-style: italic;
+  font-size: 1.35rem;
+  color: #fff;
+  text-decoration: none;
+  background: var(--pink);
+  border-radius: 999px;
+  box-shadow: 0 0 20px var(--pink), 0 0 40px rgba(255, 61, 154, 0.5);
+  transition: transform 100ms;
+}
+
+.udforsk-knap:active {
+  transform: scale(0.96);
+}
+
+/* Toppen af udforsk-siden. */
+.udforsk-top {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 24px 16px 0;
+}
+
+/* ---------- Udforsk-siden: Phil-kunstværket som baggrund ---------- */
+/* Billedet står stille, mens man scroller. Den mørke hinde gør teksten nem at læse. */
+body.udforsk-baggrund {
+  background: transparent;
+}
+
+body.udforsk-baggrund::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(rgba(27, 11, 51, 0.72), rgba(27, 11, 51, 0.85)),
+    url("billeder/vicecity/phil-kunst.jpg") center top / cover no-repeat;
+}
+
+/* ---------- Udforsk-siden: det store "Only in Leonida"-kort øverst ---------- */
+.leonida-feature {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  max-width: 1000px;
+  min-height: min(72vh, 640px);
+  margin: 18px auto 0;
+  overflow: hidden;
+  color: var(--tekst);
+  text-decoration: none;
+  border: 3px solid var(--pink);
+  border-radius: 32px;
+  box-shadow: 0 0 30px rgba(255, 61, 154, 0.55), 0 0 80px rgba(255, 61, 154, 0.25);
+}
+
+@media (max-width: 1040px) {
+  .leonida-feature {
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+}
+
+/* Billedet zoomer langsomt ind og ud hele tiden */
+.leonida-feature-billede {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 70%;
+  animation: feature-zoom 14s ease-in-out infinite alternate;
+}
+
+@keyframes feature-zoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.15); }
+}
+
+.leonida-feature::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(27, 11, 51, 0.95) 10%, rgba(27, 11, 51, 0.35) 55%, rgba(27, 11, 51, 0.1));
+}
+
+.leonida-feature-indhold {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 26px 22px 28px;
+}
+
+.leonida-feature-maerke {
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--nat);
+  background: var(--gul);
+  border-radius: 999px;
+  box-shadow: 0 0 14px var(--gul);
+}
+
+.leonida-feature-titel {
+  font-family: "Arial Black", Impact, sans-serif;
+  font-style: italic;
+  font-size: clamp(3.2rem, 15vw, 6.5rem);
+  line-height: 0.88;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 0 6px #fff, 0 0 16px var(--pink), 0 0 36px var(--pink), 0 0 70px var(--pink);
+  animation: feature-flimmer 5s infinite;
+}
+
+@keyframes feature-flimmer {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.5; }
+}
+
+.leonida-feature-tekst {
+  max-width: 28em;
+  font-size: 1.1rem;
+  font-weight: bold;
+  line-height: 1.45;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+}
+
+.leonida-feature-knap {
+  position: relative;
+  margin-top: 6px;
+  padding: 16px 28px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fff;
+  background: var(--pink);
+  border-radius: 999px;
+  box-shadow: 0 0 22px var(--pink);
+}
+
+/* Pulserende ring om knappen */
+.leonida-feature-knap::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border: 3px solid var(--pink);
+  border-radius: inherit;
+  animation: fx-puls 1.8s ease-out infinite;
+}
+
+.leonida-feature:active {
+  transform: scale(0.98);
+}
+
+.leonida-feature-mere {
+  margin: 18px 0 0;
+  text-align: center;
+  font-weight: bold;
+  color: var(--turkis);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leonida-feature-billede,
+  .leonida-feature-titel,
+  .leonida-feature-knap::after {
+    animation: none;
+  }
+}
+
+/* ---------- Butikker: billedfliser og neonskilte ---------- */
+.butik-galleri {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.butik-flise {
+  display: block;
+  padding: 0 0 10px;
+  font: inherit;
+  text-align: left;
+  color: var(--tekst);
+  background: var(--kort);
+  border: 1px solid rgba(255, 61, 154, 0.3);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  transition: transform 100ms;
+}
+
+.butik-flise:active {
+  transform: scale(0.97);
+}
+
+.butik-flise img,
+.butik-foto img,
+.neonskilt {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.butik-flise-navn {
+  display: block;
+  padding: 8px 10px 0;
+  font-weight: bold;
+  line-height: 1.25;
+}
+
+.butik-flise-sted {
+  display: block;
+  padding: 2px 10px 0;
+  font-size: 0.8rem;
+  color: var(--svag);
+}
+
+/* Neonskilt: butikkens navn lyser på en mørk murstensvæg. */
+.neonskilt {
+  --farve: var(--pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  text-align: center;
+  font-family: "Arial Black", Impact, sans-serif;
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.1;
+  color: #fff;
+  text-shadow: 0 0 4px var(--farve), 0 0 10px var(--farve), 0 0 18px var(--farve);
+  background:
+    repeating-linear-gradient(0deg, transparent 0 13px, rgba(0, 0, 0, 0.35) 13px 15px),
+    repeating-linear-gradient(90deg, transparent 0 30px, rgba(0, 0, 0, 0.25) 30px 32px),
+    linear-gradient(160deg, #2b1a3d, #150a24);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--farve) 60%, transparent), inset 0 0 18px color-mix(in srgb, var(--farve) 35%, transparent);
+}
+
+/* I vinduet er neonskiltet og billedet større. */
+.butik-foto .neonskilt {
+  font-size: 1.6rem;
+}
+
+/* ---------- Kortet over Leonida (leonida-kort.html) ---------- */
+.kort-soeg {
+  flex: 1;
+  min-width: 0;
+  margin-left: auto;
+  padding: 10px 14px;
+  font: inherit;
+  color: var(--tekst);
+  background: var(--kort);
+  border: 2px solid #4a2d7a;
+  border-radius: 999px;
+}
+
+.kort-soeg:focus {
+  outline: none;
+  border-color: var(--turkis);
+}
+
+/* På telefonen får søgefeltet sin egen linje under titlen. */
+@media (max-width: 600px) {
+  .kort-top:has(.kort-soeg) {
+    flex-wrap: wrap;
+    gap: 10px 16px;
+  }
+  .kort-soeg {
+    flex-basis: 100%;
+    order: 3;
+  }
+}
+
+/* ---------- Intro på forsiden: sort skærm, Start-knap, video, fade til velkomsten ---------- */
+html.intro-aaben,
+html.intro-aaben body {
+  overflow: hidden; /* man kan ikke scrolle, mens introen er der */
+}
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: #000;
+  transition: opacity 1.5s ease;
+}
+
+.intro.faerdig {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.intro.spiller .intro-video {
+  opacity: 1;
+}
+
+/* Start-knappen er en klat grønt slim, der vrikker og drypper.
+   Klatten og dråberne ligger i .slim og smeltes sammen af SVG-filteret #slim-goo i index.html. */
+.slim-filter { position: absolute; }
+
+.intro-start {
+  --slim: #ff3b3b;
+  --slim-moerk: #b3001b;
+  --langsom: 2.2; /* hvor langsomt slimet bevæger sig (større tal = langsommere) */
+  position: relative;
+  padding: 40px clamp(90px, 22vw, 190px);
+  font: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  animation: slim-vrik 4s ease-in-out infinite;
+  transition: opacity 0.4s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.intro-start:focus-visible { outline: 3px dashed var(--slim); outline-offset: 10px; }
+.intro-start:hover { animation-duration: 2s; }
+.intro-start:active { animation: slim-klask 0.25s ease-out; }
+
+.intro.spiller .intro-start {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Slim-laget går langt ned under knappen, så dråberne har plads til at falde. */
+.slim {
+  position: absolute;
+  inset: -24px -24px -360px -24px;
+  filter: url(#slim-goo) drop-shadow(0 0 16px rgba(255, 40, 40, 0.6));
+  pointer-events: none;
+}
+.slim-krop {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  right: 24px;
+  bottom: 360px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--slim), var(--slim-moerk));
+}
+.slim-haeng,
+.slim-draabe {
+  position: absolute;
+  left: var(--x);
+  background: var(--slim-moerk);
+  border-radius: 50%;
+}
+/* Hængende dryp under kanten, som strækker sig og trækker sig sammen */
+.slim-haeng {
+  bottom: 334px;
+  width: 28px;
+  height: 64px;
+  margin-left: -14px;
+  transform-origin: top;
+  animation: slim-haeng calc(var(--t) * var(--langsom)) ease-in-out calc(var(--d) * var(--langsom)) infinite;
+}
+/* Dråber der hænger fast, strækker slimet ud, slipper og falder */
+.slim-draabe {
+  bottom: 356px;
+  width: calc(var(--s) * 1.4);
+  height: calc(var(--s) * 1.4);
+  margin-left: calc(var(--s) * -0.7);
+  animation: slim-dryp calc(var(--t) * var(--langsom)) cubic-bezier(.55, 0, .9, .45) calc(var(--d) * var(--langsom)) infinite;
+}
+
+/* Det blanke lys øverst på klatten */
+.slim-glans {
+  position: absolute;
+  top: 10px;
+  left: 18%;
+  width: 52%;
+  height: 15px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  filter: blur(1px);
+  pointer-events: none;
+}
+.slim-tekst {
+  position: relative;
+  display: inline-block;
+  font-family: "Arial Black", Impact, sans-serif;
+  font-style: italic;
+  font-size: clamp(2.4rem, 8vw, 3.6rem);
+  color: #fff;
+  -webkit-text-stroke: 2px #4a0008;
+  text-shadow: 0 4px 0 #4a0008, 0 0 14px rgba(255, 255, 255, 0.6);
+  animation: slim-hop 4s ease-in-out infinite;
+}
+
+@keyframes slim-vrik {
+  0%, 100% { transform: scale(1, 1); }
+  25% { transform: scale(1.06, 0.94) rotate(-1.5deg); }
+  50% { transform: scale(0.96, 1.05); }
+  75% { transform: scale(1.04, 0.97) rotate(1.5deg); }
+}
+@keyframes slim-klask {
+  0% { transform: scale(1.15, 0.8); }
+  100% { transform: scale(1, 1); }
+}
+@keyframes slim-hop {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-4px) rotate(2deg); }
+}
+@keyframes slim-haeng {
+  0%, 100% { transform: scaleY(0.55); }
+  50% { transform: scaleY(1.35); }
+}
+@keyframes slim-dryp {
+  0% { transform: translateY(-10px) scale(0.4); opacity: 1; }
+  35% { transform: translateY(18px) scale(1, 1.2); }
+  55% { transform: translateY(46px) scale(0.9, 1.3); }
+  90% { opacity: 1; }
+  100% { transform: translateY(350px) scale(0.6, 1.2); opacity: 0; }
+}
+
+/* "Skip" øverst til højre, kun mens videoen spiller */
+.intro-spring {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  padding: 8px 16px;
+  font: inherit;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease 1s;
+}
+
+.intro.spiller .intro-spring {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Zoom-effekten ude i siderne. Midten er gennemsigtig, så slim-knappen står frit. */
+.intro-zoom {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse at center, transparent 26%, #000 62%);
+  mask-image: radial-gradient(ellipse at center, transparent 26%, #000 62%);
+  animation: intro-zoom-puls 7s ease-in-out infinite;
+  transition: opacity 0.6s ease;
+}
+.intro.spiller .intro-zoom { opacity: 0; }
+@keyframes intro-zoom-puls {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+/* Slim og zoom kører altid: de er hele idéen med intro-skærmen. */
+
+/* ---------- Shops: den hemmelige cirkel nede i venstre hjørne ---------- */
+.hemmelig-knap {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  z-index: 50;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  overflow: hidden;
+  background: #111;
+  opacity: 0.45;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.hemmelig-knap:hover,
+.hemmelig-knap:focus-visible { opacity: 1; transform: scale(1.3); }
+.hemmelig-knap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.hemmelig-vindue {
+  width: min(92vw, 420px);
+  padding: 24px;
+  border: 2px solid #ff3d9a;
+  border-radius: 18px;
+  background: #120a1c;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(255, 61, 154, 0.5);
+}
+.hemmelig-vindue::backdrop { background: rgba(0, 0, 0, 0.75); }
+.hemmelig-vindue h2 { margin: 0 0 14px; letter-spacing: 3px; text-transform: uppercase; color: #ff3d9a; text-shadow: 0 0 10px #ff3d9a; }
+.hemmelig-felt {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 2px solid #3ee8ff;
+  border-radius: 10px;
+  background: #000;
+  color: #fff;
+  font-size: 18px;
+  text-align: center;
+}
+.hemmelig-ok,
+.hemmelig-luk {
+  margin-top: 12px;
+  padding: 10px 26px;
+  border: 0;
+  border-radius: 999px;
+  background: #ff3d9a;
+  color: #fff;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+.hemmelig-luk { background: #333; }
+.hemmelig-besked { min-height: 1.2em; margin: 10px 0 0; color: #ff4545; font-weight: bold; }
+.hemmelig-billede { display: none; width: 100%; border-radius: 12px; }
+
+/* Når passwordet er rigtigt: formularen forsvinder og billedet popper frem. */
+.hemmelig-vindue.afsloeret { width: min(96vw, 900px); }
+.hemmelig-vindue.afsloeret .hemmelig-form { display: none; }
+.hemmelig-vindue.afsloeret .hemmelig-billede { display: block; animation: hemmelig-pop 0.45s cubic-bezier(.2, 1.6, .4, 1); }
+
+@keyframes hemmelig-pop {
+  from { transform: scale(0.3) rotate(-8deg); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.ryst { animation: hemmelig-ryst 0.4s; }
+@keyframes hemmelig-ryst {
+  20%, 60% { transform: translateX(-10px); }
+  40%, 80% { transform: translateX(10px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hemmelig-vindue.afsloeret .hemmelig-billede, .ryst { animation: none; }
+}

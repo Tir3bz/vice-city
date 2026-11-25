@@ -1,0 +1,203 @@
+/* =========================================================
+   Effekter til hele siden (styres af effekter.js)
+   Vil du slå en effekt fra? Slet dens afsnit her.
+   Er telefonen sat til "reducer bevægelse", er de slået fra.
+   ========================================================= */
+
+/* ---------- Neon-stregen øverst, der viser hvor langt man har scrollet ---------- */
+.fx-fremskridt {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  z-index: 8000;
+  background: linear-gradient(90deg, var(--pink), var(--orange), var(--gul), var(--turkis));
+  box-shadow: 0 0 12px var(--pink);
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+
+/* ---------- Svævende neon-partikler og musens neon-spor ---------- */
+.fx-partikler {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* ---------- Glitch på overskrifterne ---------- */
+.fx-glitch {
+  position: relative;
+  animation: fx-flimmer 6s infinite;
+}
+
+.fx-glitch::before,
+.fx-glitch::after {
+  content: attr(data-tekst);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  text-shadow: none;
+  opacity: 0;
+}
+
+.fx-glitch::before {
+  color: var(--turkis);
+  animation: fx-glitch-a 6s infinite;
+}
+
+.fx-glitch::after {
+  color: var(--gul);
+  animation: fx-glitch-b 6s infinite;
+}
+
+/* Glitchen kommer i et kort ryk, og så er der ro et stykke tid. */
+@keyframes fx-glitch-a {
+  0%, 7%, 100% { opacity: 0; transform: none; clip-path: inset(0 0 0 0); }
+  1% { opacity: 0.9; transform: translate(-6px, -2px); clip-path: inset(10% 0 60% 0); }
+  3% { opacity: 0.9; transform: translate(5px, 1px); clip-path: inset(55% 0 15% 0); }
+  5% { opacity: 0.9; transform: translate(-3px, 2px); clip-path: inset(30% 0 40% 0); }
+}
+
+@keyframes fx-glitch-b {
+  0%, 8%, 100% { opacity: 0; transform: none; clip-path: inset(0 0 0 0); }
+  2% { opacity: 0.8; transform: translate(6px, 2px); clip-path: inset(65% 0 5% 0); }
+  4% { opacity: 0.8; transform: translate(-5px, -1px); clip-path: inset(5% 0 70% 0); }
+  6% { opacity: 0.8; transform: translate(3px, 0); clip-path: inset(40% 0 35% 0); }
+}
+
+@keyframes fx-flimmer {
+  0%, 9%, 11%, 60%, 62%, 64%, 100% { opacity: 1; }
+  10%, 61%, 63% { opacity: 0.55; }
+}
+
+/* ---------- Neon-gnister når man trykker ---------- */
+.fx-ring {
+  position: fixed;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  z-index: 9500;
+  border: 3px solid var(--c);
+  border-radius: 50%;
+  box-shadow: 0 0 14px var(--c), inset 0 0 8px var(--c);
+  pointer-events: none;
+  animation: fx-ring 0.6s ease-out forwards;
+}
+
+@keyframes fx-ring {
+  to { transform: scale(8); opacity: 0; border-width: 1px; }
+}
+
+.fx-gnist {
+  position: fixed;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  z-index: 9500;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px var(--c), 0 0 14px var(--c);
+  pointer-events: none;
+  animation: fx-gnist 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes fx-gnist {
+  to { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
+}
+
+/* ---------- 3D-vip med lysglimt (kun med mus) ---------- */
+.fx-glans {
+  position: relative;
+}
+
+.fx-glans::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.4), transparent 55%);
+  mix-blend-mode: overlay;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.fx-tilter.fx-glans::after {
+  opacity: 1;
+}
+
+.fx-tilter {
+  transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.03) !important;
+  transition: transform 0.12s ease-out !important;
+  z-index: 2;
+}
+
+/* ---------- Ting flipper ind, én efter én ---------- */
+.fx-skjult {
+  opacity: 0;
+  transform: perspective(700px) translateY(40px) rotateX(-35deg) scale(0.9);
+  transform-origin: 50% 0;
+}
+
+.fx-vis {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.5s ease-out var(--fx-forsink, 0ms),
+    transform 0.75s cubic-bezier(0.2, 0.9, 0.3, 1.35) var(--fx-forsink, 0ms) !important;
+}
+
+/* ---------- Pulserende hovedknapper ---------- */
+.map-knap,
+.udforsk-knap {
+  position: relative;
+}
+
+.map-knap::after,
+.udforsk-knap::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  border: 3px solid var(--pink);
+  pointer-events: none;
+  animation: fx-puls 1.8s ease-out infinite;
+}
+
+@keyframes fx-puls {
+  from { transform: scale(1); opacity: 0.9; }
+  to { transform: scale(1.35); opacity: 0; }
+}
+
+/* ---------- Parallax på forsiden (--sy sættes af effekter.js) ---------- */
+.velkomst {
+  background-position: center, center calc(75% + var(--sy, 0) * 0.35px);
+}
+
+.velkomst > * {
+  transform: translateY(calc(var(--sy, 0) * -0.3px));
+  opacity: calc(1 - var(--sy, 0) / 700);
+}
+
+/* ---------- "Reducer bevægelse": alt det vilde slås fra ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .fx-glitch,
+  .fx-glitch::before,
+  .fx-glitch::after,
+  .map-knap::after,
+  .udforsk-knap::after {
+    animation: none;
+  }
+
+  .velkomst > * {
+    transform: none;
+    opacity: 1;
+  }
+}

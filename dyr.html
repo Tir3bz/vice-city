@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Animals – GTA 6</title>
+  <meta name="description" content="All the animals in GTA 6, from alligators in the swamps to dolphins off the coast of Leonida.">
+  <meta property="og:title" content="Animals – GTA 6">
+  <meta property="og:description" content="All the animals in GTA 6, from alligators in the swamps to dolphins off the coast of Leonida.">
+  <meta property="og:image" content="https://tir3bz.github.io/vice-city/billeder/vicecity/leonida-kunst.jpg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="samling.css">
+  <link rel="stylesheet" href="effekter.css">
+</head>
+<body class="sam dyr-side" style="--tema: #7cff6b; --tema2: #ff3d9a">
+  <main>
+    <a class="tilbage" href="udforsk.html">&larr; Back</a>
+  </main>
+
+  <script src="data/dyr.js"></script>
+  <script src="data/dyr-tegninger.js"></script>
+  <script src="samling.js"></script>
+  <script>
+    function faktaAf(d, navn) {
+      const f = d.fakta.find((f) => f.navn === navn);
+      return f ? f.vaerdi : "";
+    }
+
+    // Hvor farligt er dyret? 0 = ikke farligt, 3 = meget farligt.
+    function fareAf(d) {
+      const v = faktaAf(d, "Dangerous").toLowerCase();
+      if (!v || v === "no") return 0;
+      if (v.startsWith("yes")) return 3;
+      if (v.includes("little") || v.includes("mild")) return 1;
+      return 2;
+    }
+    const fareFarver = ["#7cff6b", "#ffd23f", "#ff8a3d", "#ff4545"];
+    const fareNavne = ["Harmless", "A little", "Careful", "Dangerous"];
+
+    const gruppeIkoner = {
+      "Land animals": "🦌",
+      "Birds": "🦜",
+      "Reptiles & amphibians": "🐊",
+      "Sea animals": "🐬"
+    };
+
+    // Hvor dyret lever (scene fra data/dyr.js).
+    const steder = {
+      by: "🏙️ City", havOver: "🌊 Ocean", havUnder: "🐠 Under water", himmel: "☁️ Sky",
+      mark: "🌾 Fields", skov: "🌲 Forest", strand: "🏖️ Beach", sump: "🌿 Swamp", trae: "🌳 Trees"
+    };
+
+    const billede = (d) => d.billede
+      ? `<img src="${d.billede}" alt="${d.navn}" loading="lazy">`
+      : lavDyrTegning(d);
+
+    const farlige = dyr.filter((d) => fareAf(d) === 3 && d.billede);
+    const helteDyr = dyr.find((d) => d.navn.includes("Alligator") && d.billede) || farlige[0] || dyr[0];
+
+    lavSamling({
+      liste: dyr,
+      enhed: "animals",
+      helt: {
+        lille: "Wildlife of Leonida",
+        titel: "Animals",
+        tekst: "The game has over 170 animal species. Here are the ones we know about, from gators in the swamp to sharks in the sea.",
+        billede: helteDyr.billede,
+        tal: [
+          { tal: dyr.length, tekst: "animals" },
+          { tal: Object.keys(gruppeIkoner).length, tekst: "groups" },
+          { tal: dyr.filter((d) => fareAf(d) === 3).length, tekst: "dangerous" }
+        ]
+      },
+      spot: {
+        titel: "⚠️ Danger zone",
+        liste: farlige,
+        under: (d) => `${gruppeIkoner[d.gruppe] || ""} ${steder[d.scene] || d.gruppe}`
+      },
+      gruppeAf: (d) => d.gruppe,
+      gruppeIkoner,
+      ekstraFilter: { navn: "⚠️ Dangerous", test: (d) => fareAf(d) >= 2 },
+      billede,
+      badges: (d) => {
+        const fare = fareAf(d);
+        return `<span class="sam-badge sam-badge-hoejre">${gruppeIkoner[d.gruppe] || "🐾"}</span>` +
+          (fare === 3 ? `<span class="sam-badge sam-badge-venstre sam-badge-fare">⚠️ Dangerous</span>`
+            : fare === 2 ? `<span class="sam-badge sam-badge-venstre sam-badge-pas">Careful</span>` : "");
+      },
+      flise: (d) => `<small>${steder[d.scene] || d.gruppe}</small>`,
+      undertitel: (d) => `${gruppeIkoner[d.gruppe] || ""} ${d.gruppe}`,
+      detaljer: (d) => {
+        const fare = fareAf(d);
+        const ekstra = d.fakta.filter((f) => f.navn !== "Dangerous" && f.navn !== "In real life");
+        const ivirkeligheden = faktaAf(d, "In real life");
+        return `
+          <div class="sam-boks">
+            <h3>Danger: ${fareNavne[fare]}</h3>
+            <div class="sam-fare" style="--fare:${fareFarver[fare]}">
+              ${[1, 2, 3].map((n) => `<span class="${n <= fare ? "til" : ""}"></span>`).join("")}
+            </div>
+            <p style="margin:0">${faktaAf(d, "Dangerous") || "No"}</p>
+          </div>
+          ${ivirkeligheden ? `<div class="sam-vidste"><strong>🤓 Did you know?</strong>${ivirkeligheden}</div>` : ""}
+          <div class="sam-fakta">
+            <div><strong>Group</strong>${d.gruppe}</div>
+            <div><strong>Lives in</strong>${steder[d.scene] || "Leonida"}</div>
+            ${ekstra.map((f) => `<div><strong>${f.navn}</strong>${f.vaerdi}</div>`).join("")}
+          </div>`;
+      }
+    });
+  </script>
+  <script src="effekter.js"></script>
+  <script src="overgang.js"></script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GTA 6 – Fan Site</title>
+  <meta name="description" content="A GTA 6 fan site about Vice City and Leonida: animals, cars, characters, shops and a map of the whole state.">
+  <meta property="og:title" content="GTA 6 – Fan Site">
+  <meta property="og:description" content="A GTA 6 fan site about Vice City and Leonida: animals, cars, characters, shops and a map of the whole state.">
+  <meta property="og:image" content="https://tir3bz.github.io/vice-city/billeder/vicecity/leonida-kunst.jpg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="effekter.css">
+</head>
+<body>
+  <!-- Intro: sort skærm med en Start-knap. Trykker man, spilles GTA 6-introen (video/intro.mp4),
+       og bagefter fader den over til velkomsten. Den vises kun første gang, man åbner siden. -->
+  <div id="intro" class="intro">
+    <video class="intro-video" src="video/intro.mp4" preload="auto" playsinline></video>
+    <!-- Zoom-effekten ude i siderne: lysstreger der suser ud mod kanten -->
+    <canvas class="intro-zoom" aria-hidden="true"></canvas>
+    <!-- Slim-knappen: den røde klat med dryp. Selve slimet laves med filteret "slim-goo",
+         som smelter klat og dråber sammen, så de trækker sig ud som rigtigt slim. -->
+    <svg class="slim-filter" width="0" height="0" aria-hidden="true">
+      <filter id="slim-goo">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="b"/>
+        <feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10"/>
+      </filter>
+    </svg>
+    <button class="intro-start" type="button">
+      <span class="slim" aria-hidden="true">
+        <span class="slim-krop"></span>
+        <!-- Dryp der hænger og bliver længere og kortere -->
+        <span class="slim-haeng" style="--x: 18%; --t: 2.6s; --d: 0s"></span>
+        <span class="slim-haeng" style="--x: 47%; --t: 3.4s; --d: -1.2s"></span>
+        <span class="slim-haeng" style="--x: 80%; --t: 2.2s; --d: -0.6s"></span>
+        <!-- Dråber der slipper og falder -->
+        <span class="slim-draabe" style="--x: 26%; --t: 2.8s; --d: 0s; --s: 22px"></span>
+        <span class="slim-draabe" style="--x: 40%; --t: 3.6s; --d: -1.8s; --s: 16px"></span>
+        <span class="slim-draabe" style="--x: 58%; --t: 2.4s; --d: -0.9s; --s: 26px"></span>
+        <span class="slim-draabe" style="--x: 72%; --t: 3.1s; --d: -2.3s; --s: 18px"></span>
+        <span class="slim-draabe" style="--x: 12%; --t: 4s; --d: -3s; --s: 14px"></span>
+        <span class="slim-draabe" style="--x: 88%; --t: 3.8s; --d: -1.4s; --s: 15px"></span>
+        <span class="slim-draabe" style="--x: 50%; --t: 2.1s; --d: -0.4s; --s: 20px"></span>
+        <span class="slim-draabe" style="--x: 33%; --t: 2.6s; --d: -1.6s; --s: 12px"></span>
+        <span class="slim-draabe" style="--x: 64%; --t: 3.3s; --d: -2.7s; --s: 17px"></span>
+      </span>
+      <span class="slim-glans" aria-hidden="true"></span>
+      <span class="slim-tekst">Start</span>
+    </button>
+    <button class="intro-spring" type="button">Skip &rsaquo;</button>
+  </div>
+  <script>
+    (() => {
+      const intro = document.getElementById("intro");
+      const video = intro.querySelector("video");
+      // Har man set introen i denne fane, går man direkte til velkomsten (fx når man trykker Back).
+      if (sessionStorage.getItem("introSet")) { intro.remove(); return; }
+      document.documentElement.classList.add("intro-aaben");
+
+      // Introen er slut: fade over til velkomsten og fjern den bagefter.
+      function slut() {
+        if (intro.classList.contains("faerdig")) return;
+        sessionStorage.setItem("introSet", "1");
+        intro.classList.add("faerdig");
+        document.documentElement.classList.remove("intro-aaben");
+        setTimeout(() => { video.pause(); intro.remove(); }, 1600);
+      }
+
+      // ---------- Zoom-effekten: neonstreger der flyver ud fra midten ----------
+      const lr = intro.querySelector(".intro-zoom");
+      const ctx = lr.getContext("2d");
+      const farver = ["#ff3b3b", "#3ee8ff", "#ff3d9a", "#ffd23f"];
+      let B = 0, H = 0;
+      function tilpas() {
+        B = lr.width = innerWidth;
+        H = lr.height = innerHeight;
+      }
+      tilpas();
+      addEventListener("resize", tilpas);
+
+      // Hver streg har en retning og en afstand fra midten (z: 1 = langt væk, 0 = helt tæt på).
+      const nyStreg = (s = {}) => {
+        s.v = Math.random() * Math.PI * 2;
+        s.z = 0.6 + Math.random() * 0.4;
+        s.farve = farver[Math.floor(Math.random() * farver.length)];
+        return s;
+      };
+      const streger = Array.from({ length: 160 }, () => { const s = nyStreg(); s.z = Math.random(); return s; });
+
+      function tegn() {
+        if (!intro.isConnected || intro.classList.contains("spiller")) return; // stop når videoen starter
+        requestAnimationFrame(tegn);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.25)"; // lidt efterglød
+        ctx.fillRect(0, 0, B, H);
+        const mx = B / 2, my = H / 2, stor = Math.max(B, H);
+        for (const s of streger) {
+          const foer = 0.06 / s.z;
+          s.z -= 0.0045 * (1.2 - s.z);
+          if (s.z <= 0.03) { nyStreg(s); continue; }
+          const nu = 0.06 / s.z;
+          const cx = Math.cos(s.v), cy = Math.sin(s.v);
+          ctx.strokeStyle = s.farve;
+          ctx.globalAlpha = Math.min(1, (1 - s.z) * 1.6);
+          ctx.lineWidth = 1 + (1 - s.z) * 3;
+          ctx.beginPath();
+          ctx.moveTo(mx + cx * foer * stor, my + cy * foer * stor);
+          ctx.lineTo(mx + cx * nu * stor, my + cy * nu * stor);
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+      }
+      requestAnimationFrame(tegn);
+
+      intro.querySelector(".intro-start").onclick = () => {
+        intro.classList.add("spiller");
+        video.play().catch(slut); // virker videoen ikke, går vi bare videre
+      };
+      intro.querySelector(".intro-spring").onclick = slut;
+      video.onended = slut;
+      video.onerror = () => { if (intro.classList.contains("spiller")) slut(); };
+    })();
+  </script>
+
+  <!-- Det første man ser: velkomsten øverst og det store Leonida-billede ud over hele skærmen -->
+  <header class="velkomst">
+    <p class="velkomst-lille">Welcome to</p>
+    <h1>Vice City</h1>
+    <p class="velkomst-tekst">Explore everything about the city here: the wild animals, the fast cars, the people and the shops.</p>
+    <p class="velkomst-af">A GTA 6 fan site made by Elias from Nymarkskolen</p>
+
+    <a class="scroll-pil" href="#start" aria-label="Scroll down">
+      <span>Scroll down</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </header>
+
+  <!-- Når man scroller ned, kommer knappen, der fader over til alle sektionerne (udforsk.html) -->
+  <section id="start" class="start">
+    <!-- Neon-scenen bag knappen: himmel, stjerner, sol, skyline, palmer og gitter.
+         Vil du ændre farverne, så ret dem i <defs> herunder. -->
+    <svg class="start-scene" viewBox="0 0 1200 500" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <defs>
+        <linearGradient id="himmel" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#1b0b33"/>
+          <stop offset="0.55" stop-color="#3a0f5c"/>
+          <stop offset="1" stop-color="#b0306f"/>
+        </linearGradient>
+        <linearGradient id="sol-farve" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffd23f"/>
+          <stop offset="0.6" stop-color="#ff8a3d"/>
+          <stop offset="1" stop-color="#ff3d9a"/>
+        </linearGradient>
+        <linearGradient id="jord" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#2a0b4a"/>
+          <stop offset="1" stop-color="#1b0b33"/>
+        </linearGradient>
+        <!-- Striberne i solen -->
+        <mask id="sol-striber">
+          <rect x="0" y="0" width="1200" height="500" fill="#fff"/>
+          <rect x="0" y="268" width="1200" height="4" fill="#000"/>
+          <rect x="0" y="286" width="1200" height="6" fill="#000"/>
+          <rect x="0" y="304" width="1200" height="8" fill="#000"/>
+          <rect x="0" y="322" width="1200" height="10" fill="#000"/>
+          <rect x="0" y="340" width="1200" height="12" fill="#000"/>
+          <rect x="0" y="360" width="1200" height="140" fill="#000"/>
+        </mask>
+        <filter id="gloed" filterUnits="userSpaceOnUse" x="0" y="0" width="1200" height="500">
+          <feGaussianBlur stdDeviation="6" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- Himmel -->
+      <rect width="1200" height="360" fill="url(#himmel)"/>
+
+      <!-- Stjerner -->
+      <g class="stjerner" fill="#f6e9ff">
+        <circle cx="90" cy="40" r="1.6"/><circle cx="210" cy="95" r="1.2"/><circle cx="330" cy="30" r="1.8"/>
+        <circle cx="420" cy="140" r="1.1"/><circle cx="520" cy="60" r="1.4"/><circle cx="700" cy="35" r="1.7"/>
+        <circle cx="780" cy="120" r="1.2"/><circle cx="880" cy="55" r="1.5"/><circle cx="990" cy="100" r="1.1"/>
+        <circle cx="1100" cy="30" r="1.8"/><circle cx="1160" cy="150" r="1.2"/><circle cx="40" cy="170" r="1.3"/>
+        <circle cx="160" cy="210" r="1"/><circle cx="1040" cy="200" r="1"/><circle cx="600" cy="110" r="1.2"/>
+      </g>
+
+      <!-- Solen -->
+      <g filter="url(#gloed)">
+        <circle class="sol-cirkel" cx="600" cy="300" r="150" fill="url(#sol-farve)" mask="url(#sol-striber)"/>
+      </g>
+
+      <!-- Byens skyline -->
+      <path fill="#14052b" d="M0 360 V285 H30 V250 H55 V230 H70 V250 H95 V290 H120 V215 H160 V205 H175 V215 H190 V300 H225 V260 H260 V320 H300 V275 H330 V330 H380 V300 H410 V340 H460 V325 H500 V345 H700 V325 H740 V340 H790 V295 H820 V330 H870 V270 H905 V315 H940 V240 H965 V185 H975 V160 H985 V185 H1010 V240 H1040 V290 H1075 V225 H1110 V265 H1140 V245 H1170 V295 H1200 V360 Z"/>
+      <!-- Lys i vinduerne -->
+      <g class="vinduer">
+        <rect x="130" y="230" width="6" height="8" fill="#3ee8ff"/><rect x="145" y="250" width="6" height="8" fill="#ff3d9a"/>
+        <rect x="130" y="270" width="6" height="8" fill="#ffd23f"/><rect x="40" y="265" width="6" height="8" fill="#3ee8ff"/>
+        <rect x="235" y="280" width="6" height="8" fill="#ff3d9a"/><rect x="310" y="290" width="6" height="8" fill="#3ee8ff"/>
+        <rect x="880" y="285" width="6" height="8" fill="#ffd23f"/><rect x="950" y="255" width="6" height="8" fill="#3ee8ff"/>
+        <rect x="990" y="250" width="6" height="8" fill="#ff3d9a"/><rect x="950" y="285" width="6" height="8" fill="#ff3d9a"/>
+        <rect x="1085" y="240" width="6" height="8" fill="#3ee8ff"/><rect x="1150" y="265" width="6" height="8" fill="#ffd23f"/>
+      </g>
+      <!-- Neon-kant langs horisonten -->
+      <line x1="0" y1="360" x2="1200" y2="360" stroke="#ff3d9a" stroke-width="3" filter="url(#gloed)"/>
+
+      <!-- Gulvet med neon-gitter -->
+      <rect y="360" width="1200" height="140" fill="url(#jord)"/>
+      <g stroke="#ff3d9a" stroke-width="1.5" opacity="0.75">
+        <line x1="0" y1="369" x2="1200" y2="369"/><line x1="0" y1="380" x2="1200" y2="380"/>
+        <line x1="0" y1="395" x2="1200" y2="395"/><line x1="0" y1="415" x2="1200" y2="415"/>
+        <line x1="0" y1="439" x2="1200" y2="439"/><line x1="0" y1="467" x2="1200" y2="467"/>
+        <line x1="0" y1="499" x2="1200" y2="499"/>
+        <line x1="600" y1="360" x2="-600" y2="500"/><line x1="600" y1="360" x2="-300" y2="500"/>
+        <line x1="600" y1="360" x2="0" y2="500"/><line x1="600" y1="360" x2="150" y2="500"/>
+        <line x1="600" y1="360" x2="300" y2="500"/><line x1="600" y1="360" x2="450" y2="500"/>
+        <line x1="600" y1="360" x2="600" y2="500"/><line x1="600" y1="360" x2="750" y2="500"/>
+        <line x1="600" y1="360" x2="900" y2="500"/><line x1="600" y1="360" x2="1050" y2="500"/>
+        <line x1="600" y1="360" x2="1200" y2="500"/><line x1="600" y1="360" x2="1500" y2="500"/>
+        <line x1="600" y1="360" x2="1800" y2="500"/>
+      </g>
+
+      <!-- Palmer -->
+      <g fill="none" stroke="#0d0320" stroke-linecap="round">
+        <path d="M250 500 Q240 380 280 250" stroke-width="14"/>
+        <path d="M280 250 Q220 215 160 245" stroke-width="11"/>
+        <path d="M280 250 Q240 190 185 190" stroke-width="11"/>
+        <path d="M280 250 Q290 185 255 150" stroke-width="11"/>
+        <path d="M280 250 Q335 200 380 220" stroke-width="11"/>
+        <path d="M280 250 Q340 245 365 290" stroke-width="11"/>
+
+        <path d="M960 500 Q975 390 925 280" stroke-width="13"/>
+        <path d="M925 280 Q980 245 1040 270" stroke-width="10"/>
+        <path d="M925 280 Q965 220 1020 220" stroke-width="10"/>
+        <path d="M925 280 Q915 215 950 182" stroke-width="10"/>
+        <path d="M925 280 Q870 230 825 250" stroke-width="10"/>
+        <path d="M925 280 Q865 275 845 318" stroke-width="10"/>
+      </g>
+
+      <!-- Danseren på neon-stangen midt foran solen (billedet ligger i billeder/forside/danser.png).
+           Den turkise glød bag stangen får det til at se ud, som om stangen lyser. -->
+      <g class="danser">
+        <ellipse cx="600" cy="478" rx="26" ry="5" fill="#3ee8ff" opacity="0.35" filter="url(#gloed)"/>
+        <line x1="600" y1="152" x2="600" y2="478" stroke="#3ee8ff" stroke-width="9" filter="url(#gloed)"/>
+        <image href="billeder/forside/danser.png" x="552" y="150" width="147" height="330"/>
+      </g>
+    </svg>    <div class="start-indhold">
+      <p class="start-tekst">Ready to hit the streets?</p>
+      <a class="udforsk-knap" href="udforsk.html">Explore Vice City</a>
+    </div>
+  </section>
+
+  <script src="effekter.js"></script>
+  <script src="overgang.js"></script>
+</body>
+</html>

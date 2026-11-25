@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Only in Leonida – GTA 6</title>
+  <meta name="description" content="Only in Leonida: a scrolling tour of the people and places of GTA 6, from Vice City to Mount Kalaga.">
+  <meta property="og:title" content="Only in Leonida – GTA 6">
+  <meta property="og:description" content="Only in Leonida: a scrolling tour of the people and places of GTA 6, from Vice City to Mount Kalaga.">
+  <meta property="og:image" content="https://tir3bz.github.io/vice-city/billeder/vicecity/leonida-kunst.jpg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="effekter.css">
+  <link rel="stylesheet" href="leonida.css">
+</head>
+<body class="ol">
+  <!-- Neon-stregen øverst, der viser hvor langt man har scrollet -->
+  <div class="ol-fremskridt"></div>
+
+  <a class="tilbage ol-tilbage" href="udforsk.html">&larr; Back</a>
+
+  <!-- ---------- 1. Det store intro-billede ---------- -->
+  <header class="ol-intro">
+    <div class="ol-intro-billede" data-parallax="0.35" style="background-image: url('billeder/vicecity/leonida-kunst.jpg')"></div>
+    <div class="ol-intro-tekst">
+      <p class="ol-lille">Welcome to the sunshine state</p>
+      <h1 class="ol-neon">Only in<br>Leonida</h1>
+      <p class="ol-tagline">Sunshine by day. Neon by night. Trouble all the time.</p>
+    </div>
+    <div class="ol-scroll">
+      <span>Scroll</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </header>
+
+  <main class="ol-indhold">
+    <!-- ---------- 2. Jason og Lucia ---------- -->
+    <section class="ol-par">
+      <div id="jason" class="ol-person ol-person-stor fra-venstre" data-person="Jason Duval"></div>
+      <div id="lucia" class="ol-person ol-person-stor fra-hoejre" data-person="Lucia Caminos"></div>
+    </section>
+
+    <!-- ---------- 3. Mellemstykke med stort billede ---------- -->
+    <section class="ol-bred">
+      <div class="ol-bred-billede" data-parallax="0.25" style="background-image: url('billeder/vicecity/byen-om-natten.jpg')"></div>
+      <div class="ol-bred-tekst afsloer">
+        <h2 class="ol-neon ol-neon-lille">Only in Leonida</h2>
+        <p>Home to the neon streets of Vice City, the swamps, the islands and everything in between.</p>
+      </div>
+    </section>
+
+    <!-- ---------- 4. Cal ---------- -->
+    <section class="ol-enkelt">
+      <div class="ol-person fra-hoejre" data-person="Cal Hampton"></div>
+    </section>
+
+    <!-- ---------- 5. Turen rundt i Leonida ---------- -->
+    <section class="ol-tur-intro afsloer">
+      <div class="ol-sol" aria-hidden="true"></div>
+      <h2>Visit Leonida</h2>
+      <p>Take a tour of the places you just have to see.</p>
+    </section>
+
+    <!-- Steder og personer skiftes. Laves af koden herunder ud fra listen "tur". -->
+    <div id="tur"></div>
+
+    <!-- ---------- 6. Slutningen ---------- -->
+    <section class="ol-slut">
+      <div class="ol-bred-billede" data-parallax="0.25" style="background-image: url('billeder/vicecity/ocean-drive.jpg')"></div>
+      <div class="ol-slut-tekst afsloer">
+        <h2 class="ol-neon ol-neon-lille">See you in Leonida</h2>
+        <p>Want to know more? Check out the map, the people and the cars.</p>
+        <div class="ol-knapper">
+          <a class="ol-knap" href="landkort.html">Open the map</a>
+          <a class="ol-knap" href="karakterer.html">Meet everyone</a>
+          <a class="ol-knap" href="biler.html">See the cars</a>
+        </div>
+        <p class="ol-kredit">A fan page made by Elias. Not made by Rockstar Games. Map: gtadb.org (CC BY 4.0).</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="data/karakterer.js"></script>
+  <script>
+    // ---------- Turen: steder og personer skiftes ----------
+    // Vil du tilføje et sted? Kopier en linje og ret teksten.
+    // billede = et foto, kort = et udsnit af kortet (bruges hvis der ikke er et foto).
+    const tur = [
+      { sted: "Vice City", billede: "billeder/vicecity/skyline.jpg", kort: "billeder/leonida/vice-city.jpg",
+        tekst: "The biggest city in Leonida. Beaches, nightclubs, fast cars and big money. It never sleeps." },
+      { person: "Boobie Ike" },
+      { sted: "Leonida Keys", billede: "billeder/vicecity/leonida-keys.jpg", kort: "billeder/leonida/leonida-keys.jpg",
+        tekst: "A long chain of small islands with boats, bars and clear blue water. This is where Jason lives." },
+      { person: "Dre'Quan Priest" },
+      { sted: "Grassrivers", kort: "billeder/leonida/grassrivers.jpg",
+        tekst: "A huge swamp full of alligators, airboats and hidden secrets. Whatever you do, don't fall in." },
+      { personer: ["Bae-Luxe", "Roxy"], titel: "Real Dimez" },
+      { sted: "Port Gellhorn", kort: "billeder/leonida/port-gellhorn.jpg",
+        tekst: "An old port town on the west coast, with ships, an airfield and a lot of rough people." },
+      { person: "Raul Bautista" },
+      { sted: "Ambrosia", kort: "billeder/leonida/ambrosia.jpg",
+        tekst: "A small town in the middle of Leonida, right next to the big lake. Home of the Thrillbilly Mud Park." },
+      { person: "Brian Heder" },
+      { sted: "Mount Kalaga", kort: "billeder/leonida/mount-kalaga.jpg",
+        tekst: "Forests, hills and wild animals. The national park is the wild side of Leonida." }
+    ];
+
+    function find(navn) {
+      return karakterer.find((k) => k.navn === navn);
+    }
+
+    // Laver HTML til én person: billede, navn og tekst.
+    function personHtml(k) {
+      return `
+        <div class="ol-portraet"><img src="${k.billede}" alt="${k.navn}" loading="lazy"></div>
+        <div class="ol-person-tekst">
+          <h3>${k.navn}</h3>
+          <p>${k.tekst}</p>
+        </div>`;
+    }
+
+    // Personerne øverst (Jason, Lucia, Cal).
+    for (const el of document.querySelectorAll("[data-person]")) {
+      const k = find(el.dataset.person);
+      if (k) el.innerHTML = personHtml(k);
+    }
+
+    // Turen.
+    const turPlads = document.getElementById("tur");
+    tur.forEach((t, n) => {
+      const sektion = document.createElement("section");
+      const side = n % 4 < 2 ? "fra-venstre" : "fra-hoejre";
+
+      if (t.sted) {
+        sektion.className = "ol-sted";
+        sektion.innerHTML = `
+          <div class="ol-sted-billede ${side}">
+            <img src="${t.billede || t.kort}" alt="${t.sted}" loading="lazy">
+            ${t.billede ? `<img class="ol-sted-kort" src="${t.kort}" alt="Map of ${t.sted}" loading="lazy">` : ""}
+          </div>
+          <div class="ol-sted-tekst afsloer">
+            <p class="ol-lille">Explore</p>
+            <h2>${t.sted}</h2>
+            <p>${t.tekst}</p>
+            <a class="ol-knap" href="landkort.html?sted=${encodeURIComponent(t.sted)}">See it on the map</a>
+          </div>`;
+      } else {
+        const navne = t.personer || [t.person];
+        const folk = navne.map(find).filter(Boolean);
+        sektion.className = "ol-enkelt" + (folk.length > 1 ? " ol-gruppe" : "");
+        sektion.innerHTML = (t.titel ? `<h2 class="ol-gruppe-titel afsloer">${t.titel}</h2>` : "") +
+          folk.map((k, i) => `<div class="ol-person ${i % 2 ? "fra-hoejre" : side}">${personHtml(k)}</div>`).join("");
+      }
+      turPlads.appendChild(sektion);
+    });
+
+    // ---------- Effekter ----------
+    const roligt = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Ting toner og glider frem, når man scroller ned til dem.
+    const iagttager = new IntersectionObserver((ting) => {
+      for (const t of ting) {
+        if (t.isIntersecting) {
+          t.target.classList.add("synlig");
+          iagttager.unobserve(t.target);
+        }
+      }
+    }, { threshold: 0.2 });
+    for (const el of document.querySelectorAll(".afsloer, .fra-venstre, .fra-hoejre")) {
+      iagttager.observe(el);
+    }
+
+    // Parallax: baggrundsbillederne bevæger sig langsommere end siden.
+    // Intro-teksten forsvinder blødt, og neon-stregen øverst vokser.
+    const parallax = document.querySelectorAll("[data-parallax]");
+    const introTekst = document.querySelector(".ol-intro-tekst");
+    const fremskridt = document.querySelector(".ol-fremskridt");
+    let venter = false;
+
+    function opdater() {
+      venter = false;
+      const y = window.scrollY;
+      const h = window.innerHeight;
+      if (!roligt) {
+        for (const el of parallax) {
+          const r = el.parentElement.getBoundingClientRect();
+          if (r.bottom < 0 || r.top > h) continue;
+          const fart = Number(el.dataset.parallax);
+          el.style.transform = `translate3d(0, ${(-r.top * fart).toFixed(1)}px, 0) scale(1.15)`;
+        }
+        const del = Math.min(y / h, 1);
+        introTekst.style.opacity = 1 - del * 1.3;
+        introTekst.style.transform = `translateY(${del * -60}px) scale(${1 - del * 0.1})`;
+      }
+      const max = document.documentElement.scrollHeight - h;
+      fremskridt.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
+    }
+
+    window.addEventListener("scroll", () => {
+      if (!venter) {
+        venter = true;
+        requestAnimationFrame(opdater);
+      }
+    }, { passive: true });
+    window.addEventListener("resize", opdater);
+    opdater();
+  </script>
+  <script src="effekter.js"></script>
+  <script src="overgang.js"></script>
+</body>
+</html>

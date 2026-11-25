@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Characters – GTA 6</title>
+  <meta name="description" content="Meet the characters of GTA 6: Jason, Lucia and the people they run into in Leonida.">
+  <meta property="og:title" content="Characters – GTA 6">
+  <meta property="og:description" content="Meet the characters of GTA 6: Jason, Lucia and the people they run into in Leonida.">
+  <meta property="og:image" content="https://tir3bz.github.io/vice-city/billeder/vicecity/leonida-kunst.jpg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="effekter.css">
+</head>
+<body>
+  <main>
+    <a class="tilbage" href="udforsk.html">&larr; Back</a>
+    <h1>Characters</h1>
+    <p class="undertitel">The people of Leonida. Tap someone to learn more.</p>
+
+    <!-- Jason og Lucia: store plakater -->
+    <div id="hovedpersoner" class="hovedpersoner"></div>
+
+    <h2 class="afsnit">The story <span id="antal-story"></span></h2>
+    <div id="story" class="portraetter"></div>
+
+    <h2 class="afsnit">Around Leonida <span id="antal-side"></span></h2>
+    <div id="side" class="portraetter"></div>
+  </main>
+
+  <!-- Vinduet der åbner, når man trykker på en karakter -->
+  <dialog id="detaljer" class="bred">
+    <div class="detaljer-billede"></div>
+    <div class="detaljer-tekst">
+      <h2></h2>
+      <p></p>
+      <ul></ul>
+    </div>
+    <button class="luk">Close</button>
+  </dialog>
+
+  <script src="data/karakterer.js"></script>
+  <script src="galleri.js"></script>
+  <script>
+    // Hvilken rolle har karakteren? (står som første fakta)
+    function rolleAf(k) {
+      const f = k.fakta.find((f) => f.navn === "Role");
+      return f ? f.vaerdi : "";
+    }
+
+    // Karakterer uden billede får et neon-kort med deres forbogstaver.
+    function lavInitialer(k) {
+      const bogstaver = k.navn.split(" ").map((d) => d[0]).join("").slice(0, 2);
+      return `<div class="initialer">${bogstaver}</div>`;
+    }
+
+    // Laver én karakter som en knap med billede og navn oven på.
+    function lavKarakter(k, klasse) {
+      const knap = document.createElement("button");
+      knap.className = klasse;
+      knap.innerHTML = k.billede ? `<img src="${k.billede}" alt="" loading="lazy">` : lavInitialer(k);
+      const navn = document.createElement("span");
+      navn.className = "karakter-navn";
+      navn.textContent = k.navn;
+      knap.appendChild(navn);
+      knap.onclick = () => visDetaljer(k, lavInitialer);
+      return knap;
+    }
+
+    const grupper = { "Main character": "hovedpersoner", "Story": "story", "Side character": "side" };
+    for (const k of karakterer) {
+      const sted = grupper[rolleAf(k)] || "side";
+      const klasse = sted === "hovedpersoner" ? "plakat" : "portraet";
+      document.getElementById(sted).appendChild(lavKarakter(k, klasse));
+    }
+
+    document.getElementById("antal-story").textContent = document.getElementById("story").children.length;
+    document.getElementById("antal-side").textContent = document.getElementById("side").children.length;
+  </script>
+  <script src="effekter.js"></script>
+  <script src="overgang.js"></script>
+</body>
+</html>

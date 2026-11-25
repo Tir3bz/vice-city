@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shops – GTA 6</title>
+  <meta name="description" content="Find the shops in GTA 6: barbers, clothing stores, gun stores and more, with a map.">
+  <meta property="og:title" content="Shops – GTA 6">
+  <meta property="og:description" content="Find the shops in GTA 6: barbers, clothing stores, gun stores and more, with a map.">
+  <meta property="og:image" content="https://tir3bz.github.io/vice-city/billeder/vicecity/leonida-kunst.jpg">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="effekter.css">
+</head>
+<body>
+  <main>
+    <a class="tilbage" href="udforsk.html">&larr; Back</a>
+    <div class="butik-top">
+      <div>
+        <h1>Shops</h1>
+        <p class="undertitel">Tap a shop to see where it is.</p>
+      </div>
+      <!-- Den store runde knap til kortet -->
+      <a class="map-knap" href="landkort.html">MAP</a>
+    </div>
+
+    <input id="soeg" class="soegefelt" type="search" placeholder="Search shops or areas...">
+    <div id="typer" class="typer"></div>
+    <p id="antal" class="antal"></p>
+
+    <div id="kort"></div>
+  </main>
+
+  <!-- Vinduet der åbner, når man trykker på en butik -->
+  <dialog id="detaljer">
+    <!-- Butikkens billede (eller neonskilt) øverst i vinduet -->
+    <div class="butik-foto"></div>
+    <div class="detaljer-billede"><div id="minikort" class="minikort"></div></div>
+    <div class="detaljer-tekst">
+      <h2></h2>
+      <p></p>
+      <ul></ul>
+    </div>
+    <a class="stort-kort-link" href="landkort.html">Open the big map</a>
+    <button class="luk">Close</button>
+  </dialog>
+
+  <!-- Hemmelighed: den lille cirkel nede i venstre hjørne med manden.
+       Passwords: "botmigibottenbot", "Palle" og "Fitwi klump". -->
+  <button class="hemmelig-knap" aria-label="?">
+    <img src="billeder/hemmelig/manden.jpg" alt="">
+  </button>
+  <dialog id="hemmelig" class="hemmelig-vindue">
+    <form class="hemmelig-form">
+      <h2>Password</h2>
+      <input class="hemmelig-felt" type="password" autocomplete="off" placeholder="Type the password...">
+      <button class="hemmelig-ok" type="submit">OK</button>
+      <p class="hemmelig-besked"></p>
+    </form>
+    <img class="hemmelig-billede" alt="">
+    <button class="hemmelig-luk" type="button">Close</button>
+  </dialog>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="data/butikker.js"></script>
+  <script src="data/butik-placeringer.js"></script>
+  <script src="data/landkort.js"></script>
+  <script src="kort.js"></script>
+  <script>
+    // Laver en liste med alle butikstyper, uden dubletter.
+    const alleTyper = ["All"];
+    for (const b of butikker) {
+      if (!alleTyper.includes(b.type)) alleTyper.push(b.type);
+    }
+
+    let valgtType = "All";
+    const soeg = document.getElementById("soeg");
+    const typerPlads = document.getElementById("typer");
+    const vindue = document.getElementById("detaljer");
+    let minikort = null;
+
+    // Laver en knap for hver type.
+    for (const type of alleTyper) {
+      const knap = document.createElement("button");
+      knap.className = "type-knap";
+      knap.textContent = type;
+      knap.onclick = () => {
+        valgtType = type;
+        opdater();
+      };
+      typerPlads.appendChild(knap);
+    }
+
+    // Viser de butikker, der passer til den valgte type og søgningen.
+    // Søgningen kigger både på navnet og området (fx "ocean beach").
+    function opdater() {
+      const ord = soeg.value.trim().toLowerCase();
+      const fundne = butikker.filter((b) =>
+        (valgtType === "All" || b.type === valgtType) &&
+        (b.navn + " " + b.fakta[0].vaerdi).toLowerCase().includes(ord)
+      );
+
+      for (const knap of typerPlads.children) {
+        knap.classList.toggle("valgt", knap.textContent === valgtType);
+      }
+
+      document.getElementById("antal").textContent =
+        fundne.length === 0 ? "No shops found." : "Showing " + fundne.length + " shops";
+      // Viser butikkerne som fliser med billede, navn og område.
+      const plads = document.getElementById("kort");
+      plads.innerHTML = "";
+      plads.className = "butik-galleri";
+      for (const b of fundne) {
+        const flise = document.createElement("button");
+        flise.className = "butik-flise";
+        flise.innerHTML = lavButiksbillede(b);
+        const navn = document.createElement("span");
+        navn.className = "butik-flise-navn";
+        navn.textContent = b.navn;
+        const sted = document.createElement("span");
+        sted.className = "butik-flise-sted";
+        sted.textContent = b.fakta[0].vaerdi;
+        flise.append(navn, sted);
+        flise.onclick = () => visButik(butikker.indexOf(b));
+        plads.appendChild(flise);
+      }
+    }
+
+    // Hver butikstype har sin egen neonfarve.
+    const skiltFarver = {
+      "Clothing": "#ff3d9a", "Shoes": "#ff7ac2", "Barber & Salon": "#3ee8ff", "Tattoo": "#b98cff",
+      "Mod shop": "#ff8a3d", "Gun store": "#ff4747", "Pay 'n' Spray": "#ffd23f",
+      "Gas station": "#7dff8a", "Car wash": "#3ee8ff", "Electronics": "#b98cff"
+    };
+
+    // Rigtigt billede, hvis butikken har et. Ellers et neonskilt med butikkens navn.
+    function lavButiksbillede(b) {
+      if (b.billede) return `<img src="${b.billede}" alt="" loading="lazy">`;
+      const skilt = document.createElement("div");
+      skilt.className = "neonskilt";
+      skilt.style.setProperty("--farve", skiltFarver[b.type] || "#ff3d9a");
+      skilt.textContent = b.navn;
+      return skilt.outerHTML;
+    }
+
+    // Åbner vinduet med et lille kort, hvor butikken lyser op.
+    function visButik(i) {
+      const b = butikker[i];
+      vindue.querySelector(".butik-foto").innerHTML = lavButiksbillede(b);
+      vindue.querySelector("h2").textContent = b.navn;
+      vindue.querySelector("p").textContent = b.tekst;
+
+      const fakta = vindue.querySelector("ul");
+      fakta.innerHTML = "";
+      for (const f of [{ navn: "Type", vaerdi: b.type }, ...b.fakta]) {
+        const linje = document.createElement("li");
+        const label = document.createElement("strong");
+        label.textContent = f.navn;
+        linje.appendChild(label);
+        linje.appendChild(document.createTextNode(f.vaerdi));
+        fakta.appendChild(linje);
+      }
+
+      vindue.querySelector(".stort-kort-link").href = "landkort.html?butik=" + i;
+      vindue.showModal();
+      vindue.scrollTop = 0; // start øverst, så neonskiltet ses helt
+
+      // Det lille kort laves først, når vinduet er åbent, så det får den rigtige størrelse.
+      if (minikort) minikort.remove();
+      minikort = lavLandkort("minikort", { zoomKnapper: false });
+      const p = butikPunkter[i];
+      minikort.setView(kortPunkt(p.x, p.y), 4);
+      lavNaal(minikort, i, true);
+    }
+
+    vindue.querySelector(".luk").onclick = () => vindue.close();
+    vindue.addEventListener("click", (e) => {
+      if (e.target === vindue) vindue.close();
+    });
+
+    soeg.oninput = opdater;
+    opdater();
+
+    // ---------- Hemmeligheden ----------
+    // Skriv et nyt password her, hvis du vil have flere: "password": "billede".
+    const hemmeligheder = {
+      "botmigibottenbot": "billeder/hemmelig/botmigibottenbot.jpg",
+      "palle": "billeder/hemmelig/flodhest.jpg",
+      "fitwi klump": "billeder/hemmelig/fitwi-klump.jpg"
+    };
+    const hVindue = document.getElementById("hemmelig");
+    const hForm = hVindue.querySelector(".hemmelig-form");
+    const hFelt = hVindue.querySelector(".hemmelig-felt");
+    const hBesked = hVindue.querySelector(".hemmelig-besked");
+    const hBillede = hVindue.querySelector(".hemmelig-billede");
+
+    document.querySelector(".hemmelig-knap").onclick = () => {
+      hVindue.classList.remove("afsloeret");
+      hFelt.value = "";
+      hBesked.textContent = "";
+      hVindue.showModal();
+      hFelt.focus();
+    };
+
+    hForm.onsubmit = (e) => {
+      e.preventDefault();
+      const billede = hemmeligheder[hFelt.value.trim().toLowerCase().replace(/\s+/g, " ")];
+      if (billede) {
+        hBillede.src = billede;
+        hVindue.classList.add("afsloeret");
+      } else {
+        hBesked.textContent = "Wrong password";
+        hForm.classList.remove("ryst");
+        void hForm.offsetWidth; // så rystelsen kan starte forfra
+        hForm.classList.add("ryst");
+      }
+    };
+
+    hVindue.querySelector(".hemmelig-luk").onclick = () => hVindue.close();
+    hVindue.addEventListener("click", (e) => {
+      if (e.target === hVindue) hVindue.close();
+    });
+  </script>
+  <script src="effekter.js"></script>
+  <script src="overgang.js"></script>
+</body>
+</html>

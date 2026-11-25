@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cars – GTA 6</title>
+  <meta name="description" content="The cars in GTA 6: muscle cars, supercars, motorcycles and more, with search and car types.">
+  <meta property="og:title" content="Cars – GTA 6">
+  <meta property="og:description" content="The cars in GTA 6: muscle cars, supercars, motorcycles and more, with search and car types.">
+  <meta property="og:image" content="https://tir3bz.github.io/vice-city/billeder/vicecity/leonida-kunst.jpg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="samling.css">
+  <link rel="stylesheet" href="effekter.css">
+</head>
+<body class="sam biler" style="--tema: #3ee8ff; --tema2: #ff3d9a">
+  <main>
+    <a class="tilbage" href="udforsk.html">&larr; Back</a>
+  </main>
+
+  <script src="data/biler.js"></script>
+  <script src="samling.js"></script>
+  <script>
+    // Finder en fakta-værdi, fx faktaAf(bil, "Brand").
+    function faktaAf(bil, navn) {
+      const f = bil.fakta.find((f) => f.navn === navn);
+      return f ? f.vaerdi : "";
+    }
+    const road = (b) => Number(faktaAf(b, "Road rating")) || 0;
+    const offroad = (b) => Number(faktaAf(b, "Off-road rating")) || 0;
+
+    // Et ikon for hver type.
+    const typeIkoner = {
+      "Supercar": "🏎️", "Sports car": "🏁", "Sports classic": "🕶️", "Muscle car": "💪",
+      "Coupe": "🚘", "Sedan": "🚗", "Compact": "🚙", "SUV": "🚙", "Off-road": "🛻",
+      "Van": "🚐", "Motorcycle": "🏍️", "Truck": "🚚", "Utility": "🛠️", "Industrial": "🚜",
+      "Service": "🚕", "Emergency": "🚓", "Military": "🪖"
+    };
+
+    // Tegning til biler uden billede.
+    function bilTegning(bil) {
+      return `<svg viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="160" height="100" fill="#2a1550"/>
+        <text x="80" y="62" font-size="44" text-anchor="middle">${typeIkoner[faktaAf(bil, "Type")] || "🚗"}</text></svg>`;
+    }
+    const billede = (b) => b.billede
+      ? `<img src="${b.billede}" alt="${b.navn}" loading="lazy">`
+      : bilTegning(b);
+
+    const maxRoad = Math.max(...biler.map(road));
+    const maxOff = Math.max(...biler.map(offroad));
+    const medRating = biler.filter((b) => road(b) > 0);
+    const vejRang = [...medRating].sort((a, b) => road(b) - road(a));
+    const maerker = new Set(biler.map((b) => faktaAf(b, "Brand")).filter(Boolean));
+    const motorcykler = biler.filter((b) => faktaAf(b, "Type") === "Motorcycle");
+    const hurtigst = vejRang[0];
+
+    lavSamling({
+      liste: biler,
+      enhed: "vehicles",
+      helt: {
+        lille: "Leonida garage",
+        titel: "Cars",
+        tekst: "Every car and motorcycle we know about, from muscle cars to supercars. Pick a ride.",
+        billede: hurtigst.billede,
+        tal: [
+          { tal: biler.length, tekst: "vehicles" },
+          { tal: maerker.size, tekst: "brands" },
+          { tal: motorcykler.length, tekst: "motorcycles" }
+        ]
+      },
+      spot: {
+        titel: "Fastest on the road",
+        liste: vejRang.slice(0, 10),
+        under: (b) => `${typeIkoner[faktaAf(b, "Type")] || ""} ${faktaAf(b, "Type")} · Road ${road(b)}`
+      },
+      gruppeAf: (b) => faktaAf(b, "Type") || "Other",
+      gruppeIkoner: typeIkoner,
+      sorteringer: [
+        { navn: "Fastest", sammenlign: (a, b) => road(b) - road(a) },
+        { navn: "Best off-road", sammenlign: (a, b) => offroad(b) - offroad(a) },
+        { navn: "Name A–Z", sammenlign: (a, b) => a.navn.localeCompare(b.navn) },
+        { navn: "Brand", sammenlign: (a, b) => faktaAf(a, "Brand").localeCompare(faktaAf(b, "Brand")) || road(b) - road(a) }
+      ],
+      billede,
+      badges: (b) =>
+        (faktaAf(b, "Brand") ? `<span class="sam-badge sam-badge-venstre">${faktaAf(b, "Brand")}</span>` : "") +
+        `<span class="sam-badge sam-badge-hoejre">${typeIkoner[faktaAf(b, "Type")] || "🚗"}</span>`,
+      flise: (b) => road(b)
+        ? statBar("Road", road(b), maxRoad, "#3ee8ff") + statBar("Off-road", offroad(b), maxOff, "#ff8a3d")
+        : `<small>${faktaAf(b, "Type")}</small>`,
+      undertitel: (b) => `${typeIkoner[faktaAf(b, "Type")] || ""} ${faktaAf(b, "Brand")} · ${faktaAf(b, "Type")}`,
+      detaljer: (b) => {
+        const rang = vejRang.indexOf(b);
+        let html = "";
+        if (road(b)) {
+          html += `<div class="sam-boks">
+            <h3>Stats</h3>
+            ${statBar("Road", road(b), maxRoad, "#3ee8ff")}
+            ${statBar("Off-road", offroad(b), maxOff, "#ff8a3d")}
+            ${rang >= 0 ? `<p class="sam-rang">#${rang + 1} of ${vejRang.length} on the road</p>` : ""}
+          </div>`;
+        }
+        const based = faktaAf(b, "Based on");
+        if (based) {
+          html += `<div class="sam-vidste"><strong>🚘 Inspired by the real</strong>${based}</div>`;
+        }
+        html += `<div class="sam-fakta">
+          <div><strong>Brand</strong>${faktaAf(b, "Brand") || "Unknown"}</div>
+          <div><strong>Type</strong>${faktaAf(b, "Type")}</div>
+        </div>`;
+        return html;
+      }
+    });
+  </script>
+  <script src="effekter.js"></script>
+  <script src="overgang.js"></script>
+</body>
+</html>
